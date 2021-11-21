@@ -2,12 +2,11 @@ FROM node:16-alpine
 LABEL maintainer="João Marques <marques.joaopereira@gmail.com>"
 
 RUN apk update && apk upgrade && \
-    apk add --no-cache bash git openssh
+    apk add --no-cache bash
 
-# Had to remove this because Heroku requires port 80, which needs a priviledged account
-#RUN addgroup -g 1001 ghouse && adduser -u 1001 -G ghouse -h /usr/ghouse -D ghouse
+RUN addgroup -g 1001 expressjs-boilerplate && adduser -u 1001 -G expressjs-boilerplate -h /usr/expressjs-boilerplate -D expressjs-boilerplate
+
 WORKDIR /var/www/expressjs-boilerplate
-#USER ghouse
 
 COPY package*.json ./
 
@@ -15,9 +14,14 @@ RUN npm install
 
 COPY . .
 
+
 RUN npm run build
-# Remove because of heroku
-#ENV PORT=80
-#EXPOSE ${PORT}
+
+ENV PORT=3000
+ENV LOG_LEVEL=INFO
+
+EXPOSE ${PORT}
+
+USER expressjs-boilerplate
 
 CMD [ "npm", "run", "serve" ]

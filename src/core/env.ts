@@ -5,7 +5,7 @@ dotenv.config();
 const getEnv = (key: string, defaultValue?: string): string => {
   const value = process.env[key] || defaultValue;
   if (!value) {
-    throw new Error(`Undefined environment variable - ${value}`);
+    throw new Error(`Undefined environment variable - ${key}`);
   }
   return value;
 };
