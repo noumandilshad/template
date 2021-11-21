@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "target": "es6",
+        "lib": [
+            "es6"
+        ],
+        "types": [
+            "reflect-metadata"
+        ],
+        "module": "commonjs",
+        "rootDir": "./",
+        "outDir": "./build",
+        "esModuleInterop": true,
+        "strict": true,
+        "emitDecoratorMetadata": true,
+        "noImplicitAny": true
+    }
+}
