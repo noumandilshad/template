@@ -1,6 +1,6 @@
 {
-  "name": "expressjs-api-boliterplate",
-  "version": "1.0.0",
+  "name": "friency-api",
+  "version": "0.1.0",
   "private": true,
   "maintainers": [
     "marques.joaopereira@gmail.com"
@@ -49,19 +49,11 @@
     "ts-node": "^9.1.1",
     "typescript": "^4.5.2"
   },
-  "description": "A boilerplate for expressjs with typescript and inversifyJS",
+  "description": "Friency api",
   "main": "index.js",
   "directories": {
     "test": "tests"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jpmarques66/express-boilerplate.git"
-  },
   "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/jpmarques66/express-boilerplate/issues"
-  },
-  "homepage": "https://github.com/jpmarques66/express-boilerplate#readme"
+  "license": "ISC"
 }

@@ -1,15 +1,16 @@
 /* eslint-disable */
 import { appContainer } from './inversify.config';
 import { AppInterface } from './src/AppInterface';
+import { env } from './src/core/env';
 import { TYPES } from './src/types/types';
 
-const debug = require('debug')('expressjs-boilerplate:server');
+const debug = require('debug')('friency:server');
 const http = require('http');
 
 /**
  * Get port from environment and store in Express.
  */
-const port = normalizePort(process.env.PORT || '3000');
+const port = normalizePort(env.PORT);
 const app = appContainer.get<AppInterface>(TYPES.AppInterface).getConfiguredApp();
 
 app.set('port', port);

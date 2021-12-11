@@ -1,5 +1,6 @@
-# expressjs-boilerplate
+# Friency-api
 
+Friency api with NodeJs, ExpressJs & Typescript
 ## Requirements
 
 ### System requirements
@@ -28,8 +29,8 @@ You should now be able to run `curl -X GET http://localhost:3000/hello-world` an
 
 ## Docker
 
-1. `docker build . -t expressjs-boilerplate`
-2. `docker run -p 3000:3000 expressjs-boilerplate`
+1. `docker build . -t friency`
+2. `docker run -p 3000:3000 friency`
 
 ## Test
 

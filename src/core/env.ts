@@ -12,5 +12,6 @@ const getEnv = (key: string, defaultValue?: string): string => {
 
 export const env = {
   NODE_ENV: getEnv('NODE_ENV'),
-  LOG_LEVEL: getEnv('LOG_LEVEL'),
+  LOG_LEVEL: getEnv('LOG_LEVEL', 'INFO'),
+  PORT: getEnv('PORT', '3000'),
 };
