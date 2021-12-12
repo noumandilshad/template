@@ -9,11 +9,8 @@ import { Logger } from 'log4js';
 import { inject, injectable } from 'inversify';
 import { AuthRouter } from './auth/AuthRouter';
 import { getLogger } from './common/AppLogger';
-import { isEnvDevelopment } from './common/utils/isEnvDevelopment';
-import { HTTPStatusCodes } from './common/types/HTTPStatusCodes';
-import { AUTH_TYPES as AUTH_TYPES } from './auth/authTypes';
-
-const SOMETHING_WENT_WRONG_MESSAGE = 'Something went wrong.';
+import { AUTH_TYPES } from './auth/authTypes';
+import { ApiError } from './common/ApiError';
 
 @injectable()
 export class FriencyApi {
@@ -51,12 +48,11 @@ export class FriencyApi {
     this.configureRouters();
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    this.app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
-      res.status(err.statusCode || HTTPStatusCodes.InternalServerError);
+    this.app.use((err: ApiError, req: Request, res: Response, next: NextFunction) => {
       this.appLogger.error(err);
-      return res.send({
-        message: isEnvDevelopment() ? err.message : SOMETHING_WENT_WRONG_MESSAGE,
-      });
+      return res
+        .status(err.statusCode)
+        .send(err.toResponse());
     });
 
     // catch 404 and forward to error handler

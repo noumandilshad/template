@@ -11,8 +11,12 @@ export class AuthController {
     this.appLogger = getLogger();
   }
 
-  handleHelloWorld(req: Request, res: Response): Response {
+  handleLogin(req: Request, res: Response): Response {
     return res.status(200)
       .send({ message: 'Hello world!' });
+  }
+
+  handleRegister(req: Request, res: Response): void {
+    throw new Error('Method not implemented.');
   }
 }
