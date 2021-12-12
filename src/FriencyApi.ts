@@ -7,27 +7,26 @@ import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import { Logger } from 'log4js';
 import { inject, injectable } from 'inversify';
-import { HTTPStatusCodes } from './types/HTTPStatusCodes';
-import { getLogger } from './core/AppLogger';
-import { TYPES } from './types/types';
-import { AppInterface } from './AppInterface';
-import { isEnvDevelopment } from './core/utils/isEnvDevelopment';
-import { HelloWorldRouterInterface } from './routes/HelloWorldRoutes/HelloWorldRouterInterface';
+import { AuthRouter } from './auth/AuthRouter';
+import { getLogger } from './common/AppLogger';
+import { isEnvDevelopment } from './common/utils/isEnvDevelopment';
+import { HTTPStatusCodes } from './common/types/HTTPStatusCodes';
+import { AUTH_TYPES as AUTH_TYPES } from './auth/authTypes';
 
 const SOMETHING_WENT_WRONG_MESSAGE = 'Something went wrong.';
 
 @injectable()
-export class HelloWorldApp implements AppInterface {
+export class FriencyApi {
   private appLogger: Logger;
 
   private app: ExpressApplication;
 
-  private helloWorldRouter: HelloWorldRouterInterface;
+  private authRouter: AuthRouter;
 
-  constructor(@inject(TYPES.HelloWorldRouterInterface) helloWorldRouter: HelloWorldRouterInterface) {
+  constructor(@inject(AUTH_TYPES.AuthRouter) authRouter: AuthRouter) {
     this.appLogger = getLogger();
     this.app = express();
-    this.helloWorldRouter = helloWorldRouter;
+    this.authRouter = authRouter;
   }
 
   getConfiguredApp(): ExpressApplication {
@@ -71,6 +70,11 @@ export class HelloWorldApp implements AppInterface {
   }
 
   private configureRouters() {
-    this.app.use('/', this.helloWorldRouter.getConfiguredRouter());
+    this.app.use('/auth', this.authRouter.getConfiguredRouter());
   }
 }
+const TYPES = {
+  FriencyApi: Symbol.for('FriencyApi'),
+};
+
+export { TYPES };
