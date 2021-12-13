@@ -11,10 +11,25 @@ export class RegisterUserDto {
   email: string;
 
   @IsNotEmpty()
+  @Trim()
+  firstName: string;
+
+  @IsNotEmpty()
+  @Trim()
+  lastName: string;
+
+  @IsNotEmpty()
   password: string;
 
-  constructor(email: string, password: string) {
+  constructor(
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string,
+  ) {
     this.email = email;
     this.password = password;
+    this.firstName = firstName;
+    this.lastName = lastName;
   }
 }

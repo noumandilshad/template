@@ -6,13 +6,13 @@ import {
 export class LoginDto {
   @IsNotEmpty()
   @Trim()
-  username: string;
+  email: string;
 
   @IsNotEmpty()
   password: string;
 
-  constructor(username: string, password: string) {
-    this.username = username;
+  constructor(email: string, password: string) {
+    this.email = email;
     this.password = password;
   }
 }

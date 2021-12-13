@@ -19,6 +19,7 @@ module.exports = {
   },
   rules: {
     'no-useless-constructor': 'off',
+    'no-param-reassign': 'off',
     'max-classes-per-file': 'off',
     'no-plusplus': [2, { allowForLoopAfterthoughts: true }],
     'max-len': ['warn', { code: 120 }],

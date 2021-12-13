@@ -26,11 +26,10 @@ export const dtoValidationMiddleware =
             },
             {},
           );
-          next(new ApiError(HTTPStatusCodes.BadRequest, 'Invalid fields', dtoErrors));
-        } else {
-          req.body = dtoObj;
-          next();
+          return next(new ApiError(HTTPStatusCodes.BadRequest, 'Invalid fields', dtoErrors));
         }
+        req.body = dtoObj;
+        return next();
       },
     );
   };
