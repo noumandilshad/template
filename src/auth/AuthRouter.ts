@@ -1,10 +1,11 @@
 import express, { Router } from 'express';
 import { inject, injectable } from 'inversify';
 import { BaseRouter } from '../common/BaseRouter';
-import { AuthController } from './controllers/AuthController';
+import { AuthController } from './AuthController';
 import { AUTH_TYPES } from './authTypes';
 import { dtoValidationMiddleware } from '../common/middlewares/dtoValidation';
 import { LoginDto } from './dtos/LoginDto';
+import { RegisterUserDto } from './dtos/RegisterUserDto';
 
 @injectable()
 export class AuthRouter implements BaseRouter {
@@ -29,6 +30,10 @@ export class AuthRouter implements BaseRouter {
       dtoValidationMiddleware(LoginDto),
       (req, res) => this.authController.handleLogin(req, res),
     );
-    this.router.post('/register', (req, res) => this.authController.handleRegister(req, res));
+    this.router.post(
+      '/register',
+      dtoValidationMiddleware(RegisterUserDto),
+      (req, res) => this.authController.handleRegister(req, res),
+    );
   }
 }

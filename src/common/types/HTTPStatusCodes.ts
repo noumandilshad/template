@@ -3,4 +3,5 @@ export enum HTTPStatusCodes {
     NotFound = 404,
     InternalServerError = 500,
     Success = 200,
+    Created = 201,
 }
