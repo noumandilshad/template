@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { getLogger, Logger } from 'log4js';
-import { sign } from 'jsonwebtoken';
+import { sign, verify } from 'jsonwebtoken';
 import { ApiError } from '../../common/ApiError';
 import { HTTPStatusCodes } from '../../common/types/HTTPStatusCodes';
 import { AUTH_TYPES } from '../authTypes';
@@ -19,11 +19,14 @@ export class TokenService {
 
   private passwordService: PasswordService;
 
+  private jwtSecret: string;
+
   constructor(
     @inject(AUTH_TYPES.UserRepository) userRepository: UserRepository,
     @inject(AUTH_TYPES.PasswordService) passwordService: PasswordService,
   ) {
     this.logger = getLogger();
+    this.jwtSecret = env.JWT_PRIVATE_KEY;
     this.userRepository = userRepository;
     this.passwordService = passwordService;
   }
@@ -46,9 +49,21 @@ export class TokenService {
   }
 
   private issueTokenForUser(user: User): Token {
-    const token = sign({ ...UserDto.fromUser(user) }, env.JWT_PRIVATE_KEY);
+    const token = sign({ ...UserDto.fromUser(user) }, this.jwtSecret);
 
     // TODO add logic for refresh token
     return new Token(token, 'notImplemented');
+  }
+
+  public isTokenValid(token: string): boolean {
+    try {
+      this.logger.debug(`Verifying token ${token}`);
+      verify(token, this.jwtSecret);
+      this.logger.debug(`Valid token ${token}`);
+      return true;
+    } catch (err) {
+      this.logger.debug(`Invalid token ${token}`);
+      return false;
+    }
   }
 }

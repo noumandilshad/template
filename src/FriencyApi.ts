@@ -11,6 +11,8 @@ import { getLogger } from './common/AppLogger';
 import { AUTH_TYPES } from './auth/authTypes';
 import { ApiError } from './common/ApiError';
 import { connectToDatabase } from './common/database';
+import { TokenService } from './auth/services/TokenService';
+import { authMiddleware } from './common/middlewares/authMiddleware';
 
 @injectable()
 export class FriencyApi {
@@ -20,10 +22,16 @@ export class FriencyApi {
 
   private authRouter: AuthRouter;
 
-  constructor(@inject(AUTH_TYPES.AuthRouter) authRouter: AuthRouter) {
+  private tokenService: TokenService;
+
+  constructor(
+    @inject(AUTH_TYPES.AuthRouter) authRouter: AuthRouter,
+    @inject(AUTH_TYPES.TokenService) tokenService: TokenService,
+  ) {
     this.appLogger = getLogger();
     this.app = express();
     this.authRouter = authRouter;
+    this.tokenService = tokenService;
   }
 
   getConfiguredApp(): ExpressApplication {
@@ -74,6 +82,8 @@ export class FriencyApi {
     this.app.use(express.urlencoded({ extended: false }));
     this.app.use(cookieParser());
     this.app.use(express.static(path.join(__dirname, 'public')));
+
+    this.app.use((...args) => authMiddleware(this.tokenService, ...args));
   }
 
   private configureRouters() {

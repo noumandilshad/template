@@ -35,5 +35,10 @@ export class AuthRouter implements BaseRouter {
       dtoValidationMiddleware(RegisterUserDto),
       (req, res) => this.authController.handleRegister(req, res),
     );
+    // TODO remove this
+    this.router.get(
+      '/protected',
+      (req, res) => this.authController.protectedRoute(req, res),
+    );
   }
 }

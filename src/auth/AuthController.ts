@@ -37,7 +37,7 @@ export class AuthController {
       .send(new TokenDto(token.accessToken, token.refreshToken));
   }
 
-  async handleRegister(req: Request<any, UserDto, RegisterUserDto>, res: Response): Promise<void> {
+  async handleRegister(req: Request<any, any, RegisterUserDto>, res: Response<UserDto>): Promise<void> {
     this.appLogger.info('Creating a new user from ', RegisterUserDto);
     const registerUserDto = req.body;
 
@@ -53,5 +53,9 @@ export class AuthController {
     res
       .status(HTTPStatusCodes.Created)
       .send(UserDto.fromUser(user));
+  }
+
+  public protectedRoute(req: Request<any, UserDto, any>, res: Response<UserDto>): void {
+    res.status(HTTPStatusCodes.Created).send();
   }
 }
