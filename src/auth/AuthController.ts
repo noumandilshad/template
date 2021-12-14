@@ -9,6 +9,7 @@ import { TokenDto } from './dtos/TokenDto';
 import { User } from './models/User';
 import { TokenService } from './services/TokenService';
 import { RegisterUserService } from './services/RegisterUserService';
+import { UserDto } from './dtos/UserDto';
 
 @injectable()
 export class AuthController {
@@ -36,8 +37,10 @@ export class AuthController {
       .send(new TokenDto(token.accessToken, token.refreshToken));
   }
 
-  async handleRegister(req: Request<any, any, RegisterUserDto>, res: Response): Promise<void> {
+  async handleRegister(req: Request<any, UserDto, RegisterUserDto>, res: Response): Promise<void> {
+    this.appLogger.info('Creating a new user from ', RegisterUserDto);
     const registerUserDto = req.body;
+
     const user = await this.registerUserService.registerUser(
       new User(
         registerUserDto.firstName,
@@ -46,8 +49,9 @@ export class AuthController {
         registerUserDto.password,
       ),
     );
+
     res
       .status(HTTPStatusCodes.Created)
-      .send(user);
+      .send(UserDto.fromUser(user));
   }
 }

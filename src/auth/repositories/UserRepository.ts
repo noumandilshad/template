@@ -1,8 +1,8 @@
 import { injectable } from 'inversify';
 import { getLogger, Logger } from 'log4js';
-import { ErrorDescription } from 'mongodb';
 import { ApiError } from '../../common/ApiError';
 import { collections } from '../../common/database';
+import { HTTPStatusCodes } from '../../common/types/HTTPStatusCodes';
 import { User } from '../models/User';
 
 @injectable()
@@ -18,9 +18,13 @@ export class UserRepository {
   }
 
   public async create(user: User): Promise<User> {
-    const result = await collections.users!.insertOne(user);
-    user.id = result.insertedId;
-    this.logger.info(`New user with id ${user.id} was created`);
-    return user;
+    try {
+      const result = await collections.users!.insertOne(user);
+      user.id = result.insertedId;
+      this.logger.info(`New user with id ${user.id} was created`);
+      return user;
+    } catch (error: any) {
+      throw new ApiError(HTTPStatusCodes.InternalServerError, error.message);
+    }
   }
 }
