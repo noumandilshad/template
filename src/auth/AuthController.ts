@@ -36,13 +36,18 @@ export class AuthController {
       .send(new TokenDto(token.accessToken, token.refreshToken));
   }
 
-  handleRegister(req: Request<any, any, RegisterUserDto>, res: Response): void {
+  async handleRegister(req: Request<any, any, RegisterUserDto>, res: Response): Promise<void> {
     const registerUserDto = req.body;
-    this.registerUserService.registerUser(
-      new User(registerUserDto.email, registerUserDto.password),
+    const user = await this.registerUserService.registerUser(
+      new User(
+        registerUserDto.firstName,
+        registerUserDto.lastName,
+        registerUserDto.email,
+        registerUserDto.password,
+      ),
     );
     res
       .status(HTTPStatusCodes.Created)
-      .send();
+      .send(user);
   }
 }

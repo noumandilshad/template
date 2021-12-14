@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { getLogger, Logger } from 'log4js';
+import { ErrorDescription } from 'mongodb';
 import { ApiError } from '../../common/ApiError';
 import { HTTPStatusCodes } from '../../common/types/HTTPStatusCodes';
 import { AUTH_TYPES } from '../authTypes';
@@ -18,12 +19,16 @@ export class RegisterUserService {
     this.userRepository = userRepository;
   }
 
-  registerUser(user: User): User {
+  async registerUser(user: User): Promise<User> {
     if (this.userRepository.findByEmail(user.email)) {
       throw new ApiError(HTTPStatusCodes.BadRequest, 'Email is already in user');
     }
     user.password = hashPassword(user.password);
     this.logger.info('New user register', user);
-    return this.userRepository.create(user);
+    try {
+      return await this.userRepository.create(user);
+    } catch (error: any) {
+      throw new ApiError(HTTPStatusCodes.InternalServerError, error.message);
+    }
   }
 }

@@ -14,5 +14,6 @@ export const env = {
   NODE_ENV: getEnv('NODE_ENV'),
   LOG_LEVEL: getEnv('LOG_LEVEL', 'INFO'),
   PORT: getEnv('PORT', '3000'),
-  MONGODB_URL: getEnv('MONGODB_URL'),
+  DB_CONN_STRING: getEnv('DB_CONN_STRING'),
+  DB_NAME: getEnv('DB_NAME'),
 };

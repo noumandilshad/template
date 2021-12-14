@@ -33,6 +33,7 @@ export class TokenService {
   }
 
   private issueTokenForUser(user: User): Token {
+    // TODO add logic for token
     return new Token('mockAccessToken', 'mockRefreshToken');
   }
 

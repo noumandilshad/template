@@ -1,17 +1,13 @@
 import { injectable } from 'inversify';
 import { getLogger, Logger } from 'log4js';
-import {
-  model, Mongoose,
-} from 'mongoose';
-import { env } from '../../common/env';
+import { ErrorDescription } from 'mongodb';
+import { ApiError } from '../../common/ApiError';
+import { collections } from '../../common/database';
 import { User } from '../models/User';
-import { userSchema } from '../schema/userSchema';
 
 @injectable()
 export class UserRepository {
   private logger: Logger;
-
-  private static UserModel = model('User', userSchema);
 
   constructor() {
     this.logger = getLogger();
@@ -21,22 +17,10 @@ export class UserRepository {
     return undefined;
   }
 
-  public create(user: User): User {
-    const mongoose = new Mongoose();
-
-    mongoose.connect(env.MONGODB_URL, (err) => {
-      this.logger.info('Mongodb successfully connected');
-      const newUser = new UserRepository.UserModel({ ...user });
-      this.logger.info(newUser);
-
-      (newUser.save() as Promise<any>).then((...args: string[]) => {
-        this.logger.info('User saved successfully', args);
-        user.id = newUser.id;
-      }).catch((error: string) => {
-        // FIXME: this should throw an exception 500
-        this.logger.error(error);
-      });
-    });
+  public async create(user: User): Promise<User> {
+    const result = await collections.users!.insertOne(user);
+    user.id = result.insertedId;
+    this.logger.info(`New user with id ${user.id} was created`);
     return user;
   }
 }
