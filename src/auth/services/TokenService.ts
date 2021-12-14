@@ -6,7 +6,7 @@ import { AUTH_TYPES } from '../authTypes';
 import { Token } from '../models/Token';
 import { User } from '../models/User';
 import { UserRepository } from '../repositories/UserRepository';
-import { hashPassword } from '../utils/hashPassword';
+import { PasswordService } from './PasswordService';
 
 @injectable()
 export class TokenService {
@@ -14,18 +14,28 @@ export class TokenService {
 
   private userRepository: UserRepository;
 
-  constructor(@inject(AUTH_TYPES.UserRepository) userRepository: UserRepository) {
+  private passwordService: PasswordService;
+
+  constructor(
+    @inject(AUTH_TYPES.UserRepository) userRepository: UserRepository,
+    @inject(AUTH_TYPES.PasswordService) passwordService: PasswordService,
+  ) {
     this.logger = getLogger();
     this.userRepository = userRepository;
+    this.passwordService = passwordService;
   }
 
-  getAccessToken(email: string, password: string): Token {
-    const user = this.userRepository.findByEmail(email);
+  async issueAccessToken(email: string, password: string): Promise<Token> {
+    const user = await this.userRepository.findByEmail(email);
+
     if (!user) {
+      this.logger.debug('User not found');
+      // TODO extract message to enum class with all error messages
       throw new ApiError(HTTPStatusCodes.BadRequest, 'Invalid credentials.');
     }
 
-    if (!this.passwordMatches(user, password)) {
+    if (!(await this.passwordService.checkPasswordMatches(user.password, password))) {
+      this.logger.debug('Passwords don\'t match');
       throw new ApiError(HTTPStatusCodes.BadRequest, 'Invalid credentials.');
     }
 
@@ -35,9 +45,5 @@ export class TokenService {
   private issueTokenForUser(user: User): Token {
     // TODO add logic for token
     return new Token('mockAccessToken', 'mockRefreshToken');
-  }
-
-  private passwordMatches(user: User, password: string) {
-    return user.password === hashPassword(password);
   }
 }

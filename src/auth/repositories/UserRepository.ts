@@ -1,5 +1,6 @@
 import { injectable } from 'inversify';
 import { getLogger, Logger } from 'log4js';
+import { Document, InsertOneResult } from 'mongodb';
 import { ApiError } from '../../common/ApiError';
 import { collections } from '../../common/database';
 import { HTTPStatusCodes } from '../../common/types/HTTPStatusCodes';
@@ -13,18 +14,11 @@ export class UserRepository {
     this.logger = getLogger();
   }
 
-  public findByEmail(email: string): User | undefined {
-    return undefined;
+  public async findByEmail(email: string): Promise<User | undefined> {
+    return (await collections.users!.findOne({ email })) as unknown as User;
   }
 
-  public async create(user: User): Promise<User> {
-    try {
-      const result = await collections.users!.insertOne(user);
-      user.id = result.insertedId;
-      this.logger.info(`New user with id ${user.id} was created`);
-      return user;
-    } catch (error: any) {
-      throw new ApiError(HTTPStatusCodes.InternalServerError, error.message);
-    }
+  public async create(user: User): Promise<InsertOneResult<Document>> {
+    return collections.users!.insertOne(user);
   }
 }

@@ -28,11 +28,11 @@ export class AuthController {
     this.tokenService = tokenService;
   }
 
-  handleLogin(req: Request<any, any, LoginDto>, res: Response): Response {
+  async handleLogin(req: Request<any, any, LoginDto>, res: Response): Promise<void> {
     const loginDto = req.body;
-    const token = this.tokenService.getAccessToken(loginDto.email, loginDto.password);
+    const token = await this.tokenService.issueAccessToken(loginDto.email, loginDto.password);
 
-    return res
+    res
       .status(HTTPStatusCodes.Success)
       .send(new TokenDto(token.accessToken, token.refreshToken));
   }

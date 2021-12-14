@@ -4,4 +4,5 @@ export const AUTH_TYPES = {
   UserRepository: Symbol.for('UserRepository'),
   TokenService: Symbol.for('TokenService'),
   AuthRouter: Symbol.for('AuthRouter'),
+  PasswordService: Symbol.for('PasswordService'),
 };

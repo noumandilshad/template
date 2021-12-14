@@ -5,6 +5,7 @@ import { AuthRouter } from './AuthRouter';
 import { RegisterUserService } from './services/RegisterUserService';
 import { UserRepository } from './repositories/UserRepository';
 import { TokenService } from './services/TokenService';
+import { PasswordService } from './services/PasswordService';
 
 export const authContainer = new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Unbind) => {
   bind<AuthController>(AUTH_TYPES.AuthController).to(AuthController);
@@ -12,4 +13,5 @@ export const authContainer = new ContainerModule((bind: interfaces.Bind, unbind:
   bind<UserRepository>(AUTH_TYPES.UserRepository).to(UserRepository);
   bind<TokenService>(AUTH_TYPES.TokenService).to(TokenService);
   bind<AuthRouter>(AUTH_TYPES.AuthRouter).to(AuthRouter);
+  bind<PasswordService>(AUTH_TYPES.PasswordService).to(PasswordService);
 });
