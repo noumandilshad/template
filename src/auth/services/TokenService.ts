@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { getLogger, Logger } from 'log4js';
+import { sign } from 'jsonwebtoken';
 import { ApiError } from '../../common/ApiError';
 import { HTTPStatusCodes } from '../../common/types/HTTPStatusCodes';
 import { AUTH_TYPES } from '../authTypes';
@@ -7,6 +8,8 @@ import { Token } from '../models/Token';
 import { User } from '../models/User';
 import { UserRepository } from '../repositories/UserRepository';
 import { PasswordService } from './PasswordService';
+import { UserDto } from '../dtos/UserDto';
+import { env } from '../../common/env';
 
 @injectable()
 export class TokenService {
@@ -43,7 +46,9 @@ export class TokenService {
   }
 
   private issueTokenForUser(user: User): Token {
-    // TODO add logic for token
-    return new Token('mockAccessToken', 'mockRefreshToken');
+    const token = sign({ ...UserDto.fromUser(user) }, env.JWT_PRIVATE_KEY);
+
+    // TODO add logic for refresh token
+    return new Token(token, 'notImplemented');
   }
 }
