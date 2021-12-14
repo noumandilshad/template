@@ -18,6 +18,9 @@ module.exports = {
     ecmaVersion: 12,
   },
   rules: {
+    'no-useless-constructor': 'off',
+    'no-param-reassign': 'off',
+    'max-classes-per-file': 'off',
     'no-plusplus': [2, { allowForLoopAfterthoughts: true }],
     'max-len': ['warn', { code: 120 }],
     'unused-imports/no-unused-imports': 'warn',

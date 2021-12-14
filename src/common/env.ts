@@ -14,4 +14,7 @@ export const env = {
   NODE_ENV: getEnv('NODE_ENV'),
   LOG_LEVEL: getEnv('LOG_LEVEL', 'INFO'),
   PORT: getEnv('PORT', '3000'),
+  DB_CONN_STRING: getEnv('DB_CONN_STRING'),
+  DB_NAME: getEnv('DB_NAME'),
+  JWT_PRIVATE_KEY: Buffer.from(getEnv('JWT_PRIVATE_KEY'), 'base64').toString(),
 };

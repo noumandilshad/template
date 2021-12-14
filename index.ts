@@ -1,8 +1,7 @@
 /* eslint-disable */
 import { appContainer } from './inversify.config';
-import { AppInterface } from './src/AppInterface';
-import { env } from './src/core/env';
-import { TYPES } from './src/types/types';
+import { env } from './src/common/env';
+import { FriencyApi, TYPES } from './src/FriencyApi';
 
 const debug = require('debug')('friency:server');
 const http = require('http');
@@ -11,7 +10,7 @@ const http = require('http');
  * Get port from environment and store in Express.
  */
 const port = normalizePort(env.PORT);
-const app = appContainer.get<AppInterface>(TYPES.AppInterface).getConfiguredApp();
+const app = appContainer.get<FriencyApi>(TYPES.FriencyApi).getConfiguredApp();
 
 app.set('port', port);
 console.log(`Listening to port ${port}`);
