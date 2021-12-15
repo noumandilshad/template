@@ -1,6 +1,6 @@
 import { injectable } from 'inversify';
 import { Document, InsertOneResult } from 'mongodb';
-import { collections } from '../../common/database';
+import { collections } from '../../common/MongoDbConnection';
 import { User } from '../models/User';
 
 @injectable()
