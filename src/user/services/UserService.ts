@@ -20,12 +20,17 @@ export class UserService {
   }
 
   async createUser(user: User): Promise<User> {
+    this.logger.info(`Creating a new user with email ${user.email}`);
+
     if (await this.userRepository.findByEmail(user.email)) {
       throw new ApiError(HttpStatus.BadRequest, 'Email is already in use.');
     }
+
     try {
       const result = await this.userRepository.create(user);
+
       user.id = result.insertedId;
+
       this.logger.info(`New user with id ${user.id} was created`);
       return user;
     } catch (error: any) {
