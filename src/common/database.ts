@@ -16,6 +16,8 @@ export const connectToDatabase = async (): Promise<void> => {
 
   collections.users = usersCollection;
 
+  await collections.users!.createIndex({ email: 1 }, { unique: true });
+
   // eslint-disable-next-line max-len
   console.log(`Successfully connected to database: ${db.databaseName} and collection: ${usersCollection.collectionName}`);
 };

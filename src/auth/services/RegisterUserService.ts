@@ -26,7 +26,7 @@ export class RegisterUserService {
 
   async registerUser(user: User): Promise<User> {
     if (await this.userRepository.findByEmail(user.email)) {
-      throw new ApiError(HTTPStatusCodes.BadRequest, 'Email is already in user');
+      throw new ApiError(HTTPStatusCodes.BadRequest, 'Email is already in use.');
     }
 
     // TODO: Add user email verification
