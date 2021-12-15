@@ -2,14 +2,15 @@ import { inject, injectable } from 'inversify';
 import { getLogger, Logger } from 'log4js';
 import { sign, verify } from 'jsonwebtoken';
 import { ApiError } from '../../common/ApiError';
-import { HTTPStatusCodes } from '../../common/types/HTTPStatusCodes';
-import { AUTH_TYPES } from '../authTypes';
+import { HttpStatus } from '../../common/types/HttpStatus';
 import { Token } from '../models/Token';
-import { User } from '../models/User';
-import { UserRepository } from '../repositories/UserRepository';
+import { User } from '../../user/models/User';
 import { PasswordService } from './PasswordService';
-import { UserDto } from '../dtos/UserDto';
+import { UserDto } from '../../user/dtos/UserDto';
 import { env } from '../../common/env';
+import { UserRepository } from '../../user/repositories/UserRepository';
+import { authTypes } from '../authTypes';
+import { userTypes } from '../../user/userTypes';
 
 @injectable()
 export class TokenService {
@@ -22,8 +23,8 @@ export class TokenService {
   private jwtSecret: string;
 
   constructor(
-    @inject(AUTH_TYPES.UserRepository) userRepository: UserRepository,
-    @inject(AUTH_TYPES.PasswordService) passwordService: PasswordService,
+    @inject(userTypes.UserRepository) userRepository: UserRepository,
+    @inject(authTypes.PasswordService) passwordService: PasswordService,
   ) {
     this.logger = getLogger();
     this.jwtSecret = env.JWT_PRIVATE_KEY;
@@ -37,12 +38,12 @@ export class TokenService {
     if (!user) {
       this.logger.debug('User not found');
       // TODO extract message to enum class with all error messages
-      throw new ApiError(HTTPStatusCodes.BadRequest, 'Invalid credentials.');
+      throw new ApiError(HttpStatus.BadRequest, 'Invalid credentials.');
     }
 
     if (!(await this.passwordService.checkPasswordMatches(user.password, password))) {
       this.logger.debug('Passwords don\'t match');
-      throw new ApiError(HTTPStatusCodes.BadRequest, 'Invalid credentials.');
+      throw new ApiError(HttpStatus.BadRequest, 'Invalid credentials.');
     }
 
     return this.issueTokenForUser(user);
@@ -57,12 +58,11 @@ export class TokenService {
 
   public isTokenValid(token: string): boolean {
     try {
-      this.logger.debug(`Verifying token ${token}`);
       verify(token, this.jwtSecret);
-      this.logger.debug(`Valid token ${token}`);
+      this.logger.debug('Valid token');
       return true;
     } catch (err) {
-      this.logger.debug(`Invalid token ${token}`);
+      this.logger.debug('Invalid token');
       return false;
     }
   }

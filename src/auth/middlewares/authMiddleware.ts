@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
-import { TokenService } from '../../auth/services/TokenService';
-import { ApiError } from '../ApiError';
-import { HTTPStatusCodes } from '../types/HTTPStatusCodes';
+import { TokenService } from '../services/TokenService';
+import { ApiError } from '../../common/ApiError';
+import { HttpStatus } from '../../common/types/HttpStatus';
 
 const NO_AUTH_PATHS = [
   '/auth/login',
@@ -21,12 +21,12 @@ export const authMiddleware = (
   const authHeader = String(req.headers.authorization || '');
 
   if (!authHeader.startsWith('Bearer ')) {
-    throw new ApiError(HTTPStatusCodes.Unauthorized, 'Unauthorized.');
+    throw new ApiError(HttpStatus.Unauthorized, 'Unauthorized.');
   }
   const token = authHeader.substring(7, authHeader.length);
 
   if (!tokenService.isTokenValid(token)) {
-    throw new ApiError(HTTPStatusCodes.Unauthorized, 'Unauthorized.');
+    throw new ApiError(HttpStatus.Unauthorized, 'Unauthorized.');
   }
   next();
 };
