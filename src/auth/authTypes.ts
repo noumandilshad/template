@@ -1,7 +1,6 @@
-export const AUTH_TYPES = {
+export const authTypes = {
   AuthController: Symbol.for('AuthController'),
-  RegisterUserService: Symbol.for('RegisterUserService'),
-  UserRepository: Symbol.for('UserRepository'),
+  RegisterService: Symbol.for('RegisterService'),
   TokenService: Symbol.for('TokenService'),
   AuthRouter: Symbol.for('AuthRouter'),
   PasswordService: Symbol.for('PasswordService'),

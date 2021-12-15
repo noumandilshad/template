@@ -4,7 +4,7 @@ import {
   IsNotEmpty,
 } from 'class-validator';
 
-export class RegisterUserDto {
+export class RegisterDto {
   @IsNotEmpty()
   @Trim()
   @IsEmail()

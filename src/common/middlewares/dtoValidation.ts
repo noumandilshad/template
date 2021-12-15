@@ -3,7 +3,7 @@ import { plainToInstance } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
 import { sanitize } from 'class-sanitizer';
 import { ApiError } from '../ApiError';
-import { HTTPStatusCodes } from '../types/HTTPStatusCodes';
+import { HttpStatus } from '../types/HttpStatus';
 
 // eslint-disable-next-line operator-linebreak
 export const dtoValidationMiddleware =
@@ -26,7 +26,7 @@ export const dtoValidationMiddleware =
             },
             {},
           );
-          return next(new ApiError(HTTPStatusCodes.BadRequest, 'Invalid fields', dtoErrors));
+          return next(new ApiError(HttpStatus.BadRequest, 'Invalid fields', dtoErrors));
         }
         req.body = dtoObj;
         return next();

@@ -6,7 +6,6 @@ Friency api with NodeJs, ExpressJs & Typescript
 ### System requirements
 
 * node >= 12
-* npm
 * Docker & Docker-compose (install docker desktop)
 * (optional & for windows users) WSL2
 

@@ -1,11 +1,11 @@
 import express, { Router } from 'express';
 import { inject, injectable } from 'inversify';
-import { BaseRouter } from '../common/BaseRouter';
+import { BaseRouter } from '../../common/types/BaseRouter';
 import { AuthController } from './AuthController';
-import { AUTH_TYPES } from './authTypes';
-import { dtoValidationMiddleware } from '../common/middlewares/dtoValidation';
-import { LoginDto } from './dtos/LoginDto';
-import { RegisterUserDto } from './dtos/RegisterUserDto';
+import { dtoValidationMiddleware } from '../../common/middlewares/dtoValidation';
+import { LoginDto } from '../dtos/LoginDto';
+import { RegisterDto } from '../dtos/RegisterDto';
+import { authTypes } from '../authTypes';
 
 @injectable()
 export class AuthRouter implements BaseRouter {
@@ -13,7 +13,7 @@ export class AuthRouter implements BaseRouter {
 
   private authController: AuthController;
 
-  constructor(@inject(AUTH_TYPES.AuthController) authController: AuthController) {
+  constructor(@inject(authTypes.AuthController) authController: AuthController) {
     this.router = express.Router();
     this.authController = authController;
   }
@@ -32,7 +32,7 @@ export class AuthRouter implements BaseRouter {
     );
     this.router.post(
       '/register',
-      dtoValidationMiddleware(RegisterUserDto),
+      dtoValidationMiddleware(RegisterDto),
       (req, res) => this.authController.handleRegister(req, res),
     );
     // TODO remove this
