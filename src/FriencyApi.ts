@@ -14,8 +14,8 @@ import { notFoundMiddleware } from './common/middlewares/notFoundMiddleware';
 import { errorHandlerMiddleware } from './common/middlewares/errorHandlerMiddleware';
 import { loggerMiddleware } from './common/middlewares/loggerMiddleware';
 import { commonTypes } from './common/commonTypes';
-import { MongoDbDatabaseConnection } from './common/MongoDbConnection';
 import { contentTypeJsonMiddleware } from './common/middlewares/contentTypeJsonMiddleware';
+import { MongoDbConnection } from './common/MongoDbConnection';
 
 @injectable()
 export class FriencyApi {
@@ -27,12 +27,12 @@ export class FriencyApi {
 
   private tokenService: TokenService;
 
-  private databaseConnection: MongoDbDatabaseConnection;
+  private databaseConnection: MongoDbConnection;
 
   constructor(
     @inject(authTypes.AuthRouter) authRouter: AuthRouter,
     @inject(authTypes.TokenService) tokenService: TokenService,
-    @inject(commonTypes.MongoDbDatabaseConnection) databaseConnection: MongoDbDatabaseConnection,
+    @inject(commonTypes.MongoDbConnection) databaseConnection: MongoDbConnection,
   ) {
     this.appLogger = getLogger();
     this.app = express();

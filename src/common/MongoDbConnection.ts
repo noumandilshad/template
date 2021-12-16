@@ -8,11 +8,11 @@ const USERS_COLLECTION_NAME = 'users';
 export const collections: { users?: Collection } = {};
 
 @injectable()
-export class MongoDbDatabaseConnection {
+export class MongoDbConnection {
   private mongoClient: MongoClient;
 
-  constructor(@inject(commonTypes.MongoClient) mongoClient: MongoClient) {
-    this.mongoClient = mongoClient;
+  constructor(@inject(commonTypes.MongoDbConnString) mongoDbConnString: string) {
+    this.mongoClient = new MongoClient(mongoDbConnString);
   }
 
   public async connect(): Promise<void> {
