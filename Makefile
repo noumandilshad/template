@@ -15,7 +15,12 @@ run: dependencies
 dependencies:
 	docker-compose up -d
 
-# target: dependencies-clean - clean up local dependencies for the API (minikube, docker-compose)
-.PHONY: dependencies-clean
-dependencies-clean:
-	docker-compose clean
+.PHONY: build
+build:
+	docker-compose up -d
+
+# target: ngrok - Creates a ngrok tunnel for the API
+.PHONY: ngrok
+ngrok:
+	npm run ngrok
+
