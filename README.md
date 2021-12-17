@@ -25,6 +25,11 @@ Friency api with NodeJs, ExpressJs & Typescript
 
 You should now be able to run `curl -X POST http://localhost:3000/auth/login`.
 
+## Exposing with ngrok
+
+1. Run the application `make run`
+2. Start a ngrok tunnel `make ngrok`
+
 ## Postman collection
 
 `postman_collection.json` can be imported into postman to help test the API.

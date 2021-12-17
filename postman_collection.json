@@ -12,7 +12,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmaXJzdE5hbWUiOiJKb2huIiwibGFzdE5hbWUiOiJEb2UiLCJlbWFpbCI6InRlc3QxQG1haWwuY29tIiwiaWQiOm51bGwsImlhdCI6MTYzOTQ5Nzk3NH0.-ijVdp9fLCZwCd_-IPnoD2gVpnkKz0Sd4_xousd6pk8",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmaXJzdE5hbWasdUiOiJKb2huIiwibGFzdE5hbWUiOiJEb2UiLCJlbWFpbCI6ImpvYW8zQG1haWwuY29tIiwiaWQiOm51bGwsImlhdCI6MTYzOTU5MDI0OX0.7ldT5yP7IoWHYNv_m3G9kfJP90Lc7G8d6KQtSl-RRFQ",
 						"type": "text"
 					}
 				],
@@ -49,7 +49,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"email\": \"test1@mail.com\",\n    \"password\": \"12345\"\n}"
+					"raw": "{\n    \"email\": \"joao3@mail.com\",\n    \"password\": \"12345\"\n}"
 				},
 				"url": {
 					"raw": "http://localhost:3000/auth/login",
@@ -75,11 +75,16 @@
 						"key": "Content-Type",
 						"value": "application/json",
 						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"email\": \"test1@mail.com\",\n    \"password\": \"12345\",\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\"\n}"
+					"raw": "{\n    \"email\": \"joao3@mail.com\",\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\"\n}"
 				},
 				"url": {
 					"raw": "http://localhost:3000/auth/register",
