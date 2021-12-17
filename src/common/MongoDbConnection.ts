@@ -1,4 +1,5 @@
 import { inject, injectable } from 'inversify';
+import { getLogger, Logger } from 'log4js';
 import { Collection, Db, MongoClient } from 'mongodb';
 import { commonTypes } from './commonTypes';
 import { env } from './env';
@@ -11,7 +12,10 @@ export const collections: { users?: Collection } = {};
 export class MongoDbConnection {
   private mongoClient: MongoClient;
 
+  private logger: Logger;
+
   constructor(@inject(commonTypes.MongoDbConnString) mongoDbConnString: string) {
+    this.logger = getLogger();
     this.mongoClient = new MongoClient(mongoDbConnString);
   }
 
@@ -27,6 +31,10 @@ export class MongoDbConnection {
     await collections.users!.createIndex({ email: 1 }, { unique: true });
 
     // eslint-disable-next-line max-len
-    console.log(`Successfully connected to database: ${db.databaseName} and collection: ${usersCollection.collectionName}`);
+    this.logger.info(`Successfully connected to database: ${db.databaseName} and collection: ${usersCollection.collectionName}`);
+  }
+
+  public async closeConnection(): Promise<void> {
+    return this.mongoClient.close();
   }
 }

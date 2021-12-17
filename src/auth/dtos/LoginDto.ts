@@ -1,11 +1,13 @@
 import { Trim } from 'class-sanitizer';
 import {
+  IsEmail,
   IsNotEmpty,
 } from 'class-validator';
 
 export class LoginDto {
   @IsNotEmpty()
   @Trim()
+  @IsEmail()
   email: string;
 
   @IsNotEmpty()

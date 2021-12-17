@@ -1,5 +1,5 @@
 import express, {
-  Application as ExpressApplication,
+  Application,
 } from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
@@ -21,7 +21,7 @@ import { MongoDbConnection } from './common/MongoDbConnection';
 export class FriencyApi {
   private appLogger: Logger;
 
-  private app: ExpressApplication;
+  private app: Application;
 
   private authRouter: AuthRouter;
 
@@ -41,7 +41,7 @@ export class FriencyApi {
     this.databaseConnection = databaseConnection;
   }
 
-  async getConfiguredApp(): Promise<ExpressApplication> {
+  async getConfiguredApp(): Promise<Application> {
     try {
       await this.databaseConnection.connect();
     } catch (error) {
