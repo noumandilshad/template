@@ -1,97 +1,80 @@
 import express, {
-  Application as ExpressApplication, NextFunction, Request, Response,
+  Application,
 } from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
-import morgan from 'morgan';
 import { Logger } from 'log4js';
 import { inject, injectable } from 'inversify';
 import { getLogger } from './common/AppLogger';
-import { ApiError } from './common/ApiError';
-import { connectToDatabase } from './common/database';
 import { TokenService } from './auth/services/TokenService';
-import { authMiddleware } from './auth/middlewares/authMiddleware';
+import { checkJwtTokenMiddleware } from './auth/middlewares/authMiddleware';
 import { authTypes } from './auth/authTypes';
 import { AuthRouter } from './auth/routes/AuthRouter';
+import { notFoundMiddleware } from './common/middlewares/notFoundMiddleware';
+import { errorHandlerMiddleware } from './common/middlewares/errorHandlerMiddleware';
+import { loggerMiddleware } from './common/middlewares/loggerMiddleware';
+import { commonTypes } from './common/commonTypes';
+import { contentTypeJsonMiddleware } from './common/middlewares/contentTypeJsonMiddleware';
+import { MongoDbConnection } from './common/MongoDbConnection';
 
 @injectable()
 export class FriencyApi {
   private appLogger: Logger;
 
-  private app: ExpressApplication;
+  private app: Application;
 
   private authRouter: AuthRouter;
 
   private tokenService: TokenService;
 
+  private databaseConnection: MongoDbConnection;
+
   constructor(
     @inject(authTypes.AuthRouter) authRouter: AuthRouter,
     @inject(authTypes.TokenService) tokenService: TokenService,
+    @inject(commonTypes.MongoDbConnection) databaseConnection: MongoDbConnection,
   ) {
     this.appLogger = getLogger();
     this.app = express();
     this.authRouter = authRouter;
     this.tokenService = tokenService;
+    this.databaseConnection = databaseConnection;
   }
 
-  getConfiguredApp(): ExpressApplication {
-    connectToDatabase()
-      .then(() => {
-        this.configurePreRouterMiddlewares();
-        this.configureRouters();
-        this.configureErrorHandling();
-      })
-      .catch((error: Error) => {
-        this.appLogger.error('Database connection failed', error);
-        process.exit();
-      });
+  async getConfiguredApp(): Promise<Application> {
+    try {
+      await this.databaseConnection.connect();
+    } catch (error) {
+      this.appLogger.error('Database connection failed', error);
+      throw error;
+    }
+    this.addPreRouterMiddlewares();
+    this.addRouters();
+
+    this.addPostRouterMiddlewares();
     return this.app;
   }
 
-  private configureErrorHandling() {
-    this.app.use((err: ApiError, req: Request, res: Response, next: NextFunction) => {
-      this.appLogger.error(err);
-      return res
-        .status(err.statusCode)
-        .send(err.toResponse());
-    });
-
-    // catch 404 and forward to error handler
-    this.app.use((req, res) => {
-      res.status(404).send({
-        message: 'Not found',
-      });
-    });
+  private addPostRouterMiddlewares() {
+    this.app.use(errorHandlerMiddleware(this.appLogger));
+    this.app.use(notFoundMiddleware);
   }
 
-  private configurePreRouterMiddlewares() {
-    this.app.use((req, res, next) => {
-      res.header('Content-Type', 'application/json');
-      next();
-    });
-
-    this.app.use(morgan('combined', {
-      stream: {
-        write: (str: string) => {
-          this.appLogger.info(str);
-        },
-      },
-    }));
-
+  private addPreRouterMiddlewares() {
+    this.app.use(contentTypeJsonMiddleware);
+    this.app.use(loggerMiddleware(this.appLogger));
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: false }));
     this.app.use(cookieParser());
     this.app.use(express.static(path.join(__dirname, 'public')));
-
-    this.app.use((...args) => authMiddleware(this.tokenService, ...args));
+    this.app.use(checkJwtTokenMiddleware(this.tokenService));
   }
 
-  private configureRouters() {
+  private addRouters() {
     this.app.use('/auth', this.authRouter.getConfiguredRouter());
   }
 }
-const TYPES = {
+
+export const types = {
   FriencyApi: Symbol.for('FriencyApi'),
 };
-
-export { TYPES };
