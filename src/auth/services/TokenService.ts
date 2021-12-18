@@ -8,9 +8,9 @@ import { User } from '../../user/models/User';
 import { PasswordService } from './PasswordService';
 import { UserDto } from '../../user/dtos/UserDto';
 import { env } from '../../common/env';
-import { UserRepository } from '../../user/repositories/UserRepository';
 import { authTypes } from '../authTypes';
 import { userTypes } from '../../user/userTypes';
+import { UserRepository } from '../../user/repositories/UserRepository';
 
 @injectable()
 export class TokenService {

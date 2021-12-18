@@ -19,7 +19,7 @@ export class UserService {
     this.userRepository = userRepository;
   }
 
-  async createUser(user: User): Promise<User> {
+  async saveUser(user: User): Promise<User> {
     this.logger.info(`Creating a new user with email ${user.email}`);
 
     if (await this.userRepository.findByEmail(user.email)) {

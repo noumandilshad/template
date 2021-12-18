@@ -24,11 +24,12 @@ export class RegisterService {
   }
 
   async registerUser(user: User): Promise<User> {
+    const registeredUser: User = { ...user };
     this.logger.debug(`Registering a new user ${user}`);
 
-    user.password = await this.passwordService.hashPassword(user.password);
+    registeredUser.password = await this.passwordService.hashPassword(user.password);
 
-    return this.userService.createUser(user);
+    return this.userService.saveUser(registeredUser);
     // TODO: Add user email verification
   }
 }

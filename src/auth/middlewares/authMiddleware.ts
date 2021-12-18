@@ -1,8 +1,8 @@
 /* eslint-disable implicit-arrow-linebreak */
 import { NextFunction, Request, Response } from 'express';
 import { TokenService } from '../services/TokenService';
-import { ApiError } from '../../common/ApiError';
 import { HttpStatus } from '../../common/types/HttpStatus';
+import { ApiError } from '../../common/ApiError';
 
 const NO_AUTH_PATHS = [
   '/auth/login',
