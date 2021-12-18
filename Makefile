@@ -15,10 +15,11 @@ run: dependencies
 dependencies:
 	docker-compose up -d
 
-.PHONY: build
-build:
-	docker-compose up -d
-
+# target: serve - Serves api through docker
+.PHONY: serve
+serve:
+	docker-compose --profile serve up -d
+	
 # target: ngrok - Creates a ngrok tunnel for the API
 .PHONY: ngrok
 ngrok:
