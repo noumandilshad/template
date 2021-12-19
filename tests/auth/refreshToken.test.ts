@@ -13,8 +13,6 @@ import { TokenDto } from '../../src/auth/dtos/TokenDto';
 import { RefreshTokenDto } from '../../src/auth/dtos/RefreshTokenDto';
 import { ApiErrorResponse } from '../../src/common/types/ApiErrorResponse';
 import { ApiErrorMessage } from '../../src/common/error/ApiErrorMessage';
-import { RefreshTokenRepository } from '../../src/auth/repositories/RefreshTokenRepository';
-import { RefreshToken } from '../../src/auth/models/RefreshToken';
 
 const login = (app: Application, email: string, password: string) => request(app)
   .post('/auth/login')
@@ -28,17 +26,14 @@ const refreshToken = (app: Application, email: string, token: string) => request
   ));
 
 describe('Refresh Token tests', () => {
-  const password = '12345';
-  let createdUser = new User('john@mail.com', password);
+  const createdUser = new User('john@mail.com', '12345');
 
   let app: Application;
-  let refreshTokenRepository: RefreshTokenRepository;
 
   beforeAll(async () => {
     app = await getApp();
-    refreshTokenRepository = appContainer.get<RefreshTokenRepository>(authTypes.RefreshTokenRepository);
     const registerService = appContainer.get<RegisterService>(authTypes.RegisterService);
-    createdUser = await registerService.registerUser(createdUser);
+    await registerService.registerUser(createdUser);
   });
   afterAll(async () => {
     await appContainer.get<MongoDbConnection>(commonTypes.MongoDbConnection).closeConnection();
@@ -51,7 +46,7 @@ describe('Refresh Token tests', () => {
       await login(
         app,
         createdUser.email,
-        password,
+        createdUser.password,
       ).expect(200)
     ).body;
 
@@ -68,7 +63,7 @@ describe('Refresh Token tests', () => {
 
   it('RefreshToken_ShouldReturnUnauthorized_WhenTokenWasAlreadyUsed', async () => {
     const tokenDto: TokenDto = (
-      await login(app, createdUser.email, password).expect(200)
+      await login(app, createdUser.email, createdUser.password).expect(200)
     ).body;
 
     // Use token to get a new accessToken
@@ -85,7 +80,7 @@ describe('Refresh Token tests', () => {
 
   it('RefreshToken_ShouldReturnUnauthorized_WhenEmailDoesntMatch', async () => {
     const tokenDto: TokenDto = (
-      await login(app, createdUser.email, password).expect(200)
+      await login(app, createdUser.email, createdUser.password).expect(200)
     ).body;
 
     const apiError: ApiErrorResponse = (
@@ -96,9 +91,9 @@ describe('Refresh Token tests', () => {
     expect(apiError.message).toBe(ApiErrorMessage.unauthorized.message);
   });
 
-  it('RefreshToken_ShouldBeSuccessful_WhenPayloadIsValid', async () => {
+  it.only('RefreshToken_ShouldBeSuccessful_WhenPayloadIsValid', async () => {
     const tokenDto: TokenDto = (
-      await login(app, createdUser.email, password).expect(200)
+      await login(app, createdUser.email, createdUser.password).expect(200)
     ).body;
 
     const res: TokenDto = (
@@ -107,21 +102,5 @@ describe('Refresh Token tests', () => {
 
     expect(res.accessToken).toBeDefined();
     expect(res.refreshToken).toBeDefined();
-  });
-  it('RefreshToken_ShouldReturnUnauthorized_WhenTokenIsExpired', async () => {
-    const expiredRefreshToken = new RefreshToken(
-      'someToken',
-      Date.now(),
-      createdUser._id!,
-      false,
-    );
-    refreshTokenRepository.create(expiredRefreshToken);
-
-    const res: ApiErrorMessage = (
-      await refreshToken(app, createdUser.email, expiredRefreshToken.token).expect(401)
-    ).body;
-
-    expect(res.code).toBe(ApiErrorMessage.unauthorized.code);
-    expect(res.message).toBe(ApiErrorMessage.unauthorized.message);
   });
 });
