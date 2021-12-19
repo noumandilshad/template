@@ -5,7 +5,4 @@ export const authTypes = {
   AuthRouter: Symbol.for('AuthRouter'),
   PasswordService: Symbol.for('PasswordService'),
   RefreshTokenRepository: Symbol.for('RefreshTokenRepository'),
-  JwtAccessTokenExpiration: Symbol.for('JwtAccessTokenExpiration'),
-  JwtSecret: Symbol.for('JwtSecret'),
-  JwtRefreshTokenExpiration: Symbol.for('JwtRefreshTokenExpiration'),
 };

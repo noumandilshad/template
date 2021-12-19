@@ -47,7 +47,7 @@ export class TokenService {
     this.refreshTokenRepository = refreshTokenRepository;
   }
 
-  async issueTokenPairForCredentials(email: string, password: string): Promise<TokenPair> {
+  async issueTokenPair(email: string, password: string): Promise<TokenPair> {
     const user = await this.userRepository.findByEmail(email);
 
     if (!user) {
@@ -61,33 +61,6 @@ export class TokenService {
       throw ApiError.fromApiErrorMessage(ApiErrorMessage.invalidLoginCredentials);
     }
 
-    return this.issueTokenPairForUser(user);
-  }
-
-  async issueTokenPairForRefreshToken(token: string, email: string): Promise<TokenPair> {
-    const refreshToken = await this.refreshTokenRepository.findByToken(token);
-    if (!refreshToken) {
-      this.logger.debug('Refresh token not found');
-      throw ApiError.fromApiErrorMessage(ApiErrorMessage.unauthorized);
-    }
-    if (refreshToken.revoked) {
-      this.logger.debug('Refresh token was revoked');
-      throw ApiError.fromApiErrorMessage(ApiErrorMessage.unauthorized);
-    }
-    if (Date.now() >= refreshToken.expiresAt) {
-      this.logger.debug('Refresh token is expired');
-      throw ApiError.fromApiErrorMessage(ApiErrorMessage.unauthorized);
-    }
-
-    const user = await this.userRepository.findById(refreshToken.userId);
-    if (!user || user!.email !== email) {
-      this.logger.debug('Refresh token email doesn\'t match');
-      throw ApiError.fromApiErrorMessage(ApiErrorMessage.unauthorized);
-    }
-
-    // Revoke token to avoid being used a second time
-    refreshToken.revoked = true;
-    await this.refreshTokenRepository.revoke(refreshToken._id!);
     return this.issueTokenPairForUser(user);
   }
 
@@ -106,19 +79,14 @@ export class TokenService {
       this.jwtSecret,
       {
         algorithm: 'HS512',
-        expiresIn: this.jwtAccessTokenExpiration,
+        expiresIn: env.JWT_ACCESS_TOKEN_EXPIRATION,
       },
     );
   }
 
   public generateRefreshToken(user: User): RefreshToken {
     const token = randToken.uid(512);
-    return new RefreshToken(
-      token,
-      Date.now() + this.jwtRefreshTokenExpiration,
-      user._id!,
-      false,
-    );
+    return new RefreshToken(token, user.id!, false);
   }
 
   public isTokenValid(token: string): boolean {
@@ -131,4 +99,7 @@ export class TokenService {
       return false;
     }
   }
+}
+function generateAccessToken() {
+  throw new Error('Function not implemented.');
 }

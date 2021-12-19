@@ -14,7 +14,7 @@ import { RefreshTokenDto } from '../dtos/RefreshTokenDto';
 
 @injectable()
 export class AuthController {
-  private appLogger: Logger;
+    private appLogger: Logger;
 
   private registerService: RegisterService;
 
@@ -31,14 +31,11 @@ export class AuthController {
 
   public async handleLogin(req: Request<any, any, LoginDto>, res: Response): Promise<void> {
     const loginDto = req.body;
-    const tokenPair = await this.tokenService.issueTokenPairForCredentials(
-      loginDto.email,
-      loginDto.password,
-    );
+    const token = await this.tokenService.issueTokenPair(loginDto.email, loginDto.password);
 
     res
       .status(HttpStatus.Success)
-      .send(new TokenDto(tokenPair.accessToken, tokenPair.refreshToken.token));
+      .send(new TokenDto(token.accessToken, token.refreshToken.token));
   }
 
   public async handleRegister(req: Request<any, any, RegisterDto>, res: Response<UserDto>): Promise<void> {
@@ -58,14 +55,7 @@ export class AuthController {
       .send(UserDto.fromUser(user));
   }
 
-  public async handleRefreshToken(req: Request<any, any, RefreshTokenDto>, res: Response): Promise<void> {
-    const refreshTokenDto = req.body;
-    const tokenPair = await this.tokenService.issueTokenPairForRefreshToken(
-      refreshTokenDto.refreshToken,
-      refreshTokenDto.email,
-    );
-    res
-      .status(HttpStatus.Success)
-      .send(new TokenDto(tokenPair.accessToken, tokenPair.refreshToken.token));
+  public handleRefreshToken(req: Request, res: Response): void {
+    throw new Error('Method not implemented.');
   }
 }
