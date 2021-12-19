@@ -36,8 +36,9 @@ export class AuthRouter implements BaseRouter {
       dtoValidationMiddleware(RegisterDto),
       (req, res) => this.authController.handleRegister(req, res),
     );
-    this.router.get(
+    this.router.post(
       '/refresh',
+      dtoValidationMiddleware(RefreshTokenDto),
       (req, res) => this.authController.handleRefreshToken(req, res),
     );
   }

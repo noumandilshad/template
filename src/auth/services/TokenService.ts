@@ -47,7 +47,7 @@ export class TokenService {
     this.refreshTokenRepository = refreshTokenRepository;
   }
 
-  async issueTokenPair(email: string, password: string): Promise<TokenPair> {
+  async issueTokenPairForCredentials(email: string, password: string): Promise<TokenPair> {
     const user = await this.userRepository.findByEmail(email);
 
     if (!user) {
@@ -61,6 +61,30 @@ export class TokenService {
       throw ApiError.fromApiErrorMessage(ApiErrorMessage.invalidLoginCredentials);
     }
 
+    return this.issueTokenPairForUser(user);
+  }
+
+  async issueTokenPairForRefreshToken(token: string, email: string): Promise<TokenPair> {
+    const refreshToken = await this.refreshTokenRepository.findByToken(token);
+    if (!refreshToken) {
+      this.logger.debug('Refresh token not found');
+      throw ApiError.fromApiErrorMessage(ApiErrorMessage.unauthorized);
+    }
+    if (refreshToken.revoked) {
+      throw ApiError.fromApiErrorMessage(ApiErrorMessage.unauthorized);
+    }
+    // Check expiration of refresh token
+    if (Date.now() < refreshToken.expiresAt) {
+      this.logger.debug('Refresh token is expired');
+      throw ApiError.fromApiErrorMessage(ApiErrorMessage.unauthorized);
+    }
+    const user = await this.userRepository.findById(refreshToken.userId);
+    if (!user || user!.email !== email) {
+      this.logger.debug('Refresh token email doesn\'t match');
+      throw ApiError.fromApiErrorMessage(ApiErrorMessage.unauthorized);
+    }
+
+    // TODO: Revoke used refreshToken
     return this.issueTokenPairForUser(user);
   }
 
@@ -86,7 +110,8 @@ export class TokenService {
 
   public generateRefreshToken(user: User): RefreshToken {
     const token = randToken.uid(512);
-    return new RefreshToken(token, user.id!, false);
+    console.log(user);
+    return new RefreshToken(token, Date.now(), user._id!, false);
   }
 
   public isTokenValid(token: string): boolean {
