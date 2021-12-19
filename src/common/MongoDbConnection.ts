@@ -29,6 +29,7 @@ export class MongoDbConnection {
     collections.users = usersCollection;
 
     await collections.users!.createIndex({ email: 1 }, { unique: true });
+    await collections.users!.createIndex({ phone: 1 }, { unique: true });
 
     // eslint-disable-next-line max-len
     this.logger.info(`Successfully connected to database: ${db.databaseName} and collection: ${usersCollection.collectionName}`);

@@ -2,6 +2,9 @@ import { Trim } from 'class-sanitizer';
 import {
   IsEmail,
   IsNotEmpty,
+  IsOptional,
+  IsPhoneNumber,
+  MinLength,
 } from 'class-validator';
 
 export class RegisterDto {
@@ -10,26 +13,22 @@ export class RegisterDto {
   @IsEmail()
   email: string;
 
-  @IsNotEmpty()
   @Trim()
-  firstName: string;
+  @IsPhoneNumber()
+  @IsOptional()
+  phone?: string;
 
   @IsNotEmpty()
-  @Trim()
-  lastName: string;
-
-  @IsNotEmpty()
+  @MinLength(5)
   password: string;
 
   constructor(
     email: string,
     password: string,
-    firstName: string,
-    lastName: string,
+    phone?: string,
   ) {
     this.email = email;
     this.password = password;
-    this.firstName = firstName;
-    this.lastName = lastName;
+    this.phone = phone;
   }
 }

@@ -43,10 +43,9 @@ export class AuthController {
 
     const user = await this.registerService.registerUser(
       new User(
-        registerUserDto.firstName,
-        registerUserDto.lastName,
         registerUserDto.email,
         registerUserDto.password,
+        registerUserDto.phone,
       ),
     );
 

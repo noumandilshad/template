@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { getLogger, Logger } from 'log4js';
 import { sign, verify } from 'jsonwebtoken';
-import { ApiError } from '../../common/ApiError';
+import { ApiError } from '../../common/error/ApiError';
 import { HttpStatus } from '../../common/types/HttpStatus';
 import { Token } from '../models/Token';
 import { User } from '../../user/models/User';
@@ -11,6 +11,7 @@ import { env } from '../../common/env';
 import { authTypes } from '../authTypes';
 import { userTypes } from '../../user/userTypes';
 import { UserRepository } from '../../user/repositories/UserRepository';
+import { ApiErrorMessage } from '../../common/error/ApiErrorMessage';
 
 @injectable()
 export class TokenService {
@@ -38,12 +39,12 @@ export class TokenService {
     if (!user) {
       this.logger.debug('User not found');
       // TODO extract message to enum class with all error messages
-      throw new ApiError(HttpStatus.Unauthorized, 'Invalid credentials.');
+      throw ApiError.fromApiErrorMessage(ApiErrorMessage.invalidLoginCredentials);
     }
 
     if (!(await this.passwordService.checkPasswordMatches(user.password, password))) {
       this.logger.debug('Passwords don\'t match');
-      throw new ApiError(HttpStatus.Unauthorized, 'Invalid credentials.');
+      throw ApiError.fromApiErrorMessage(ApiErrorMessage.invalidLoginCredentials);
     }
 
     return this.issueTokenForUser(user);

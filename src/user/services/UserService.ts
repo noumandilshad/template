@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { getLogger, Logger } from 'log4js';
-import { ApiError } from '../../common/ApiError';
-import { HttpStatus } from '../../common/types/HttpStatus';
+import { ApiError } from '../../common/error/ApiError';
+import { ApiErrorMessage } from '../../common/error/ApiErrorMessage';
 import { User } from '../models/User';
 import { UserRepository } from '../repositories/UserRepository';
 import { userTypes } from '../userTypes';
@@ -23,7 +23,11 @@ export class UserService {
     this.logger.info(`Creating a new user with email ${user.email}`);
 
     if (await this.userRepository.findByEmail(user.email)) {
-      throw new ApiError(HttpStatus.BadRequest, 'Email is already in use.');
+      throw ApiError.fromApiErrorMessage(ApiErrorMessage.emailAlreadyInUse);
+    }
+
+    if (user.phone && await this.userRepository.findByPhoneNumber(user.phone)) {
+      throw ApiError.fromApiErrorMessage(ApiErrorMessage.phoneAlreadyInUse);
     }
 
     try {
@@ -34,7 +38,7 @@ export class UserService {
       this.logger.info(`New user with id ${user.id} was created`);
       return user;
     } catch (error: any) {
-      throw new ApiError(HttpStatus.InternalServerError, error.message);
+      throw ApiError.fromInternalServerError(error.message);
     }
   }
 }

@@ -18,6 +18,7 @@ module.exports = {
     ecmaVersion: 12,
   },
   rules: {
+    'operator-linebreak': 'off',
     'no-useless-constructor': 'off',
     'no-param-reassign': 'off',
     'max-classes-per-file': 'off',

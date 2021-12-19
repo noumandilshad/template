@@ -11,10 +11,11 @@ import { RegisterService } from '../../src/auth/services/RegisterService';
 import { authTypes } from '../../src/auth/authTypes';
 import { ApiErrorResponse } from '../../src/common/types/ApiErrorResponse';
 import { TokenDto } from '../../src/auth/dtos/TokenDto';
+import { HttpStatus } from '../../src/common/types/HttpStatus';
 
-describe('Login', () => {
+describe('Login tests', () => {
   let app: Application;
-  const createdUser = new User('john', 'doe', 'john@mail.com', '12345');
+  const createdUser = new User('john@mail.com', '12345');
 
   beforeAll(async () => {
     app = await getApp();
@@ -41,7 +42,7 @@ describe('Login', () => {
         .post('/auth/login')
         .send(new LoginDto(invalidEmail, 'awesomepasswd'))
         .set('content-type', 'application/json')
-        .expect(400);
+        .expect(HttpStatus.BadRequest);
       const body = res.body as ApiErrorResponse;
       expect(body.errors?.email).toBeDefined();
     }));
@@ -53,7 +54,7 @@ describe('Login', () => {
         .post('/auth/login')
         .send({ email: 'valid@mail.com', password: invalidPwd })
         .set('content-type', 'application/json')
-        .expect(400);
+        .expect(HttpStatus.BadRequest);
       const body = res.body as ApiErrorResponse;
       expect(body.errors?.password).toBeDefined();
     }));
@@ -64,7 +65,7 @@ describe('Login', () => {
       .post('/auth/login')
       .send(new LoginDto(createdUser.email, createdUser.password))
       .set('content-type', 'application/json')
-      .expect(200);
+      .expect(HttpStatus.Success);
     const body = res.body as TokenDto;
     expect(body.accessToken).toBeDefined();
     expect(body.refreshToken).toBeDefined();

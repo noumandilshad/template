@@ -5,6 +5,10 @@ import { User } from '../models/User';
 
 @injectable()
 export class UserRepository {
+  public async findByPhoneNumber(phone: string): Promise<User | undefined> {
+    return (await collections.users!.findOne({ phone })) as unknown as User;
+  }
+
   public async findByEmail(email: string): Promise<User | undefined> {
     return (await collections.users!.findOne({ email })) as unknown as User;
   }
