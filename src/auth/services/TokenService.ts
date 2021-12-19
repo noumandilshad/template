@@ -71,6 +71,7 @@ export class TokenService {
       throw ApiError.fromApiErrorMessage(ApiErrorMessage.unauthorized);
     }
     if (refreshToken.revoked) {
+      this.logger.debug('Refresh token was revoked');
       throw ApiError.fromApiErrorMessage(ApiErrorMessage.unauthorized);
     }
     // Check expiration of refresh token
@@ -84,7 +85,9 @@ export class TokenService {
       throw ApiError.fromApiErrorMessage(ApiErrorMessage.unauthorized);
     }
 
-    // TODO: Revoke used refreshToken
+    // Revoke token to avoid being used a second time
+    refreshToken.revoked = true;
+    await this.refreshTokenRepository.revoke(refreshToken._id!);
     return this.issueTokenPairForUser(user);
   }
 
@@ -110,7 +113,6 @@ export class TokenService {
 
   public generateRefreshToken(user: User): RefreshToken {
     const token = randToken.uid(512);
-    console.log(user);
     return new RefreshToken(token, Date.now(), user._id!, false);
   }
 

@@ -6,5 +6,6 @@ export class RefreshToken {
     public expiresAt: number,
     public userId: ObjectId,
     public revoked: boolean,
+    public _id?: ObjectId,
   ) { }
 }
