@@ -106,7 +106,7 @@ export class TokenService {
       this.jwtSecret,
       {
         algorithm: 'HS512',
-        expiresIn: env.JWT_ACCESS_TOKEN_EXPIRATION,
+        expiresIn: this.jwtAccessTokenExpiration,
       },
     );
   }
@@ -115,7 +115,7 @@ export class TokenService {
     const token = randToken.uid(512);
     return new RefreshToken(
       token,
-      Date.now() + env.JWT_REFRESH_TOKEN_EXPIRATION,
+      Date.now() + this.jwtRefreshTokenExpiration,
       user._id!,
       false,
     );
