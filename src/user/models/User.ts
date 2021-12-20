@@ -1,10 +1,30 @@
-import { ObjectId } from 'mongodb';
+import {
+  Column, Entity, ObjectID, ObjectIdColumn,
+} from 'typeorm';
 
+@Entity()
 export class User {
+  @Column({ unique: true })
+  public email: string
+
+  @Column()
+  public password: string;
+
+  @Column({ unique: true })
+  public phone?: string;
+
+  @ObjectIdColumn()
+  public id?: ObjectID
+
   constructor(
-    public email: string,
-    public password: string,
-    public phone?: string,
-    public _id?: ObjectId,
-  ) {}
+    email: string,
+    password: string,
+    phone?: string,
+    id?: ObjectID,
+  ) {
+    this.email = email;
+    this.password = password;
+    this.phone = phone;
+    this.id = id;
+  }
 }

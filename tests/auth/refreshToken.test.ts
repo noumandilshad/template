@@ -1,6 +1,7 @@
 import 'ts-jest/utils';
 import request from 'supertest';
 import { Application } from 'express';
+import { Repository } from 'typeorm';
 import { getApp } from '../utils/getApp';
 import { LoginDto } from '../../src/auth/dtos/LoginDto';
 import { appContainer } from '../../inversify.config';
@@ -13,7 +14,6 @@ import { TokenDto } from '../../src/auth/dtos/TokenDto';
 import { RefreshTokenDto } from '../../src/auth/dtos/RefreshTokenDto';
 import { ApiErrorResponse } from '../../src/common/types/ApiErrorResponse';
 import { ApiErrorMessage } from '../../src/common/error/ApiErrorMessage';
-import { RefreshTokenRepository } from '../../src/auth/repositories/RefreshTokenRepository';
 import { RefreshToken } from '../../src/auth/models/RefreshToken';
 
 const login = (app: Application, email: string, password: string) => request(app)
@@ -32,11 +32,11 @@ describe('Refresh Token tests', () => {
   let createdUser = new User('john@mail.com', password);
 
   let app: Application;
-  let refreshTokenRepository: RefreshTokenRepository;
+  let refreshTokenRepository: Repository<RefreshToken>;
 
   beforeAll(async () => {
     app = await getApp();
-    refreshTokenRepository = appContainer.get<RefreshTokenRepository>(authTypes.RefreshTokenRepository);
+    refreshTokenRepository = appContainer.get<Repository<RefreshToken>>(authTypes.RefreshTokenRepository);
     const registerService = appContainer.get<RegisterService>(authTypes.RegisterService);
     createdUser = await registerService.registerUser(createdUser);
   });
@@ -112,7 +112,7 @@ describe('Refresh Token tests', () => {
     const expiredRefreshToken = new RefreshToken(
       'someToken',
       Date.now(),
-      createdUser._id!,
+      createdUser.id!.toString(),
       false,
     );
     refreshTokenRepository.create(expiredRefreshToken);

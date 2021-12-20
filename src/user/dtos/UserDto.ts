@@ -10,7 +10,7 @@ export class UserDto {
   public static fromUser(user: User): UserDto {
     return new UserDto(
       user.email,
-      user._id!.toString(),
+      user.id!.toString(),
       user.phone,
     );
   }

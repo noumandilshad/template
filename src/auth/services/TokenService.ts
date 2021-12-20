@@ -1,3 +1,4 @@
+import { getRepository, Repository } from 'typeorm';
 import { inject, injectable } from 'inversify';
 import { getLogger, Logger } from 'log4js';
 import { sign, verify } from 'jsonwebtoken';
@@ -9,18 +10,16 @@ import { PasswordService } from './PasswordService';
 import { UserDto } from '../../user/dtos/UserDto';
 import { authTypes } from '../authTypes';
 import { userTypes } from '../../user/userTypes';
-import { UserRepository } from '../../user/repositories/UserRepository';
 import { ApiErrorMessage } from '../../common/error/ApiErrorMessage';
 import { RefreshToken } from '../models/RefreshToken';
-import { RefreshTokenRepository } from '../repositories/RefreshTokenRepository';
 
 @injectable()
 export class TokenService {
   private logger: Logger;
 
-  private userRepository: UserRepository;
+  private userRepository: Repository<User>;
 
-  private refreshTokenRepository: RefreshTokenRepository;
+  private refreshTokenRepository: Repository<RefreshToken>;
 
   private passwordService: PasswordService;
 
@@ -31,8 +30,8 @@ export class TokenService {
   private jwtRefreshTokenExpiration: number;
 
   constructor(
-    @inject(userTypes.UserRepository) userRepository: UserRepository,
-    @inject(authTypes.RefreshTokenRepository) refreshTokenRepository: RefreshTokenRepository,
+    @inject(userTypes.UserRepository) userRepository: Repository<User>,
+    @inject(authTypes.RefreshTokenRepository) refreshTokenRepository: Repository<RefreshToken>,
     @inject(authTypes.PasswordService) passwordService: PasswordService,
     @inject(authTypes.JwtSecret) jwtSecret: string,
     @inject(authTypes.JwtRefreshTokenExpiration) jwtRefreshTokenExpiration: number,
@@ -48,7 +47,7 @@ export class TokenService {
   }
 
   async issueTokenPairForCredentials(email: string, password: string): Promise<TokenPair> {
-    const user = await this.userRepository.findByEmail(email);
+    const user = await this.userRepository.findOne({ email });
 
     if (!user) {
       this.logger.debug('User not found');
@@ -65,7 +64,7 @@ export class TokenService {
   }
 
   async issueTokenPairForRefreshToken(token: string, email: string): Promise<TokenPair> {
-    const refreshToken = await this.refreshTokenRepository.findByToken(token);
+    const refreshToken = await this.refreshTokenRepository.findOne({ token });
     if (!refreshToken) {
       this.logger.debug('Refresh token not found');
       throw ApiError.fromApiErrorMessage(ApiErrorMessage.unauthorized);
@@ -79,7 +78,7 @@ export class TokenService {
       throw ApiError.fromApiErrorMessage(ApiErrorMessage.unauthorized);
     }
 
-    const user = await this.userRepository.findById(refreshToken.userId);
+    const user = await this.userRepository.findOne(refreshToken.userId);
     if (!user || user!.email !== email) {
       this.logger.debug('Refresh token email doesn\'t match');
       throw ApiError.fromApiErrorMessage(ApiErrorMessage.unauthorized);
@@ -87,7 +86,7 @@ export class TokenService {
 
     // Revoke token to avoid being used a second time
     refreshToken.revoked = true;
-    await this.refreshTokenRepository.revoke(refreshToken._id!);
+    await this.refreshTokenRepository.update(refreshToken.id!, { revoked: true });
     return this.issueTokenPairForUser(user);
   }
 
@@ -116,7 +115,7 @@ export class TokenService {
     return new RefreshToken(
       token,
       Date.now() + this.jwtRefreshTokenExpiration,
-      user._id!,
+      user.id!.toString(),
       false,
     );
   }

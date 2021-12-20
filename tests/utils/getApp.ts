@@ -6,8 +6,9 @@ import { FriencyApi, types } from '../../src/FriencyApi';
 
 export const getApp = async (): Promise<Application> => {
   const mongoServer = await MongoMemoryServer.create();
-  appContainer.unbind(commonTypes.MongoDbConnString);
-  appContainer.bind(commonTypes.MongoDbConnString).toConstantValue(mongoServer.getUri());
+  appContainer.unbind(commonTypes.MongoDbHost);
+  console.log(mongoServer.getUri());
+  appContainer.bind(commonTypes.MongoDbHost).toConstantValue('');
 
   return appContainer.get<FriencyApi>(types.FriencyApi)
     .getConfiguredApp();
