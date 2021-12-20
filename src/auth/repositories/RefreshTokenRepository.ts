@@ -1,3 +1,4 @@
+import { plainToInstance } from 'class-transformer';
 import { injectable } from 'inversify';
 import { Document, InsertOneResult, ObjectId } from 'mongodb';
 import { collections } from '../../common/MongoDbConnection';
@@ -6,10 +7,10 @@ import { RefreshToken } from '../models/RefreshToken';
 @injectable()
 export class RefreshTokenRepository {
   public async revoke(id: ObjectId): Promise<RefreshToken> {
-    return collections.refreshTokens!.findOneAndUpdate(
+    return (await collections.refreshTokens!.findOneAndUpdate(
       { _id: id },
       { $set: { revoked: true } },
-    ) as unknown as RefreshToken;
+    )) as unknown as RefreshToken;
   }
 
   public async findByToken(token: string): Promise<RefreshToken | undefined> {

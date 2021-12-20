@@ -74,11 +74,11 @@ export class TokenService {
       this.logger.debug('Refresh token was revoked');
       throw ApiError.fromApiErrorMessage(ApiErrorMessage.unauthorized);
     }
-    // Check expiration of refresh token
-    if (Date.now() < refreshToken.expiresAt) {
+    if (Date.now() >= refreshToken.expiresAt) {
       this.logger.debug('Refresh token is expired');
       throw ApiError.fromApiErrorMessage(ApiErrorMessage.unauthorized);
     }
+
     const user = await this.userRepository.findById(refreshToken.userId);
     if (!user || user!.email !== email) {
       this.logger.debug('Refresh token email doesn\'t match');
@@ -113,7 +113,12 @@ export class TokenService {
 
   public generateRefreshToken(user: User): RefreshToken {
     const token = randToken.uid(512);
-    return new RefreshToken(token, Date.now(), user._id!, false);
+    return new RefreshToken(
+      token,
+      Date.now() + env.JWT_REFRESH_TOKEN_EXPIRATION,
+      user._id!,
+      false,
+    );
   }
 
   public isTokenValid(token: string): boolean {
@@ -126,7 +131,4 @@ export class TokenService {
       return false;
     }
   }
-}
-function generateAccessToken() {
-  throw new Error('Function not implemented.');
 }
