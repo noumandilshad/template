@@ -5,7 +5,6 @@ import { HttpStatus } from '../../common/types/HttpStatus';
 import { LoginDto } from '../dtos/LoginDto';
 import { RegisterDto } from '../dtos/RegisterDto';
 import { TokenDto } from '../dtos/TokenDto';
-import { User } from '../../user/models/User';
 import { TokenService } from '../services/TokenService';
 import { RegisterService } from '../services/RegisterService';
 import { UserDto } from '../../user/dtos/UserDto';

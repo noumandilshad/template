@@ -5,7 +5,6 @@ import { Repository } from 'typeorm';
 import { getApp } from '../utils/getApp';
 import { LoginDto } from '../../src/auth/dtos/LoginDto';
 import { appContainer } from '../../inversify.config';
-import { commonTypes } from '../../src/common/commonTypes';
 import { User } from '../../src/user/models/User';
 import { RegisterService } from '../../src/auth/services/RegisterService';
 import { authTypes } from '../../src/auth/authTypes';

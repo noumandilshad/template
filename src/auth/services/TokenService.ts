@@ -1,4 +1,4 @@
-import { getRepository, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { inject, injectable } from 'inversify';
 import { getLogger, Logger } from 'log4js';
 import { sign, verify } from 'jsonwebtoken';

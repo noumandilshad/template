@@ -3,7 +3,6 @@ import request from 'supertest';
 import { Application } from 'express';
 import { getApp } from '../utils/getApp';
 import { appContainer } from '../../inversify.config';
-import { commonTypes } from '../../src/common/commonTypes';
 import { RegisterService } from '../../src/auth/services/RegisterService';
 import { authTypes } from '../../src/auth/authTypes';
 import { RegisterDto } from '../../src/auth/dtos/RegisterDto';

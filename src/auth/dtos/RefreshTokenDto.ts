@@ -1,10 +1,6 @@
 import { Trim } from 'class-sanitizer';
 import {
-  IsEmail,
   IsNotEmpty,
-  IsOptional,
-  IsPhoneNumber,
-  MinLength,
 } from 'class-validator';
 
 export class RefreshTokenDto {

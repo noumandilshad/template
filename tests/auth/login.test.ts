@@ -4,7 +4,6 @@ import { Application } from 'express';
 import { getApp } from '../utils/getApp';
 import { LoginDto } from '../../src/auth/dtos/LoginDto';
 import { appContainer } from '../../inversify.config';
-import { commonTypes } from '../../src/common/commonTypes';
 import { RegisterService } from '../../src/auth/services/RegisterService';
 import { authTypes } from '../../src/auth/authTypes';
 import { ApiErrorResponse } from '../../src/common/types/ApiErrorResponse';
