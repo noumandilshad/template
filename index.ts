@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { initializeAppContainer } from './inversify.config';
-import { env } from './src/common/env';
+import { getEnv } from './src/common/env';
 import { FriencyApi, types } from './src/FriencyApi';
 
 const debug = require('debug')('friency:server');
@@ -8,7 +8,7 @@ const http = require('http');
 
 let server: any;
 
-const port = normalizePort(env.PORT);
+const port = normalizePort(getEnv('PORT'));
 initializeAppContainer().then((appContainer) => {
   appContainer.get<FriencyApi>(types.FriencyApi).getConfiguredApp()
     .then((app) => {
