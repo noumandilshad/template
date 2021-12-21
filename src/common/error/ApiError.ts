@@ -1,6 +1,6 @@
 import { ApiErrorResponse } from '../types/ApiErrorResponse';
 import { HttpStatus } from '../types/HttpStatus';
-import { isEnvDevelopment } from '../utils/isEnvDevelopment';
+import { isNodeEnvDev } from '../utils/nodeEnv';
 import { ApiErrorMessage } from './ApiErrorMessage';
 
 const SOMETHING_WENT_WRONG_MESSAGE = 'Something went wrong.';
@@ -43,7 +43,7 @@ export class ApiError {
   public toResponse(): ApiErrorResponse {
     const response: ApiErrorResponse = {
       statusCode: this.statusCode.toString(),
-      message: !isEnvDevelopment() && this.isServerError()
+      message: !isNodeEnvDev() && this.isServerError()
         ? SOMETHING_WENT_WRONG_MESSAGE
         : this.message,
     };

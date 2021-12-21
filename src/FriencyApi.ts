@@ -13,9 +13,7 @@ import { AuthRouter } from './auth/routes/AuthRouter';
 import { notFoundMiddleware } from './common/middlewares/notFoundMiddleware';
 import { errorHandlerMiddleware } from './common/middlewares/errorHandlerMiddleware';
 import { loggerMiddleware } from './common/middlewares/loggerMiddleware';
-import { commonTypes } from './common/commonTypes';
 import { contentTypeJsonMiddleware } from './common/middlewares/contentTypeJsonMiddleware';
-import { MongoDbConnection } from './common/MongoDbConnection';
 
 @injectable()
 export class FriencyApi {
@@ -27,27 +25,17 @@ export class FriencyApi {
 
   private tokenService: TokenService;
 
-  private databaseConnection: MongoDbConnection;
-
   constructor(
     @inject(authTypes.AuthRouter) authRouter: AuthRouter,
     @inject(authTypes.TokenService) tokenService: TokenService,
-    @inject(commonTypes.MongoDbConnection) databaseConnection: MongoDbConnection,
   ) {
     this.appLogger = getLogger();
     this.app = express();
     this.authRouter = authRouter;
     this.tokenService = tokenService;
-    this.databaseConnection = databaseConnection;
   }
 
   async getConfiguredApp(): Promise<Application> {
-    try {
-      await this.databaseConnection.connect();
-    } catch (error) {
-      this.appLogger.error('Database connection failed', error);
-      throw error;
-    }
     this.addPreRouterMiddlewares();
     this.addRouters();
 

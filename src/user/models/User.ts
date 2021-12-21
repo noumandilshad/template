@@ -1,9 +1,13 @@
 import {
-  Column, Entity, ObjectID, ObjectIdColumn,
+  Column, Entity, ObjectIdColumn,
+  ObjectID,
 } from 'typeorm';
 
 @Entity()
 export class User {
+  @ObjectIdColumn()
+  public id: ObjectID;
+
   @Column({ unique: true })
   public email: string
 
@@ -13,18 +17,15 @@ export class User {
   @Column({ unique: true })
   public phone?: string;
 
-  @ObjectIdColumn()
-  public id?: ObjectID
-
   constructor(
+    id: ObjectID,
     email: string,
     password: string,
     phone?: string,
-    id?: ObjectID,
   ) {
+    this.id = id;
     this.email = email;
     this.password = password;
     this.phone = phone;
-    this.id = id;
   }
 }

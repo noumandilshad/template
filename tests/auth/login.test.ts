@@ -4,14 +4,13 @@ import { Application } from 'express';
 import { getApp } from '../utils/getApp';
 import { LoginDto } from '../../src/auth/dtos/LoginDto';
 import { appContainer } from '../../inversify.config';
-import { MongoDbConnection } from '../../src/common/MongoDbConnection';
 import { commonTypes } from '../../src/common/commonTypes';
-import { User } from '../../src/user/models/User';
 import { RegisterService } from '../../src/auth/services/RegisterService';
 import { authTypes } from '../../src/auth/authTypes';
 import { ApiErrorResponse } from '../../src/common/types/ApiErrorResponse';
 import { TokenDto } from '../../src/auth/dtos/TokenDto';
 import { HttpStatus } from '../../src/common/types/HttpStatus';
+import { RegisterDto } from '../../src/auth/dtos/RegisterDto';
 
 const login = (app: Application, email: any, password: any) => request(app)
   .post('/auth/login')
@@ -19,17 +18,12 @@ const login = (app: Application, email: any, password: any) => request(app)
 
 describe('Login tests', () => {
   let app: Application;
-  const createdUser = new User('john@mail.com', '12345');
+  const createdUser = new RegisterDto('john@mail.com', '12345');
 
   beforeAll(async () => {
     app = await getApp();
     const registerService = appContainer.get<RegisterService>(authTypes.RegisterService);
     await registerService.registerUser(createdUser);
-  });
-  afterAll(async () => {
-    await appContainer.get<MongoDbConnection>(commonTypes.MongoDbConnection).closeConnection();
-    // FIXME: test are not exiting. this is a temporary fix
-    setTimeout(() => process.exit(), 1000);
   });
 
   it('Login_ShouldReturnUnauthorized_WhenUserDoesntExist', async () => {
@@ -52,7 +46,7 @@ describe('Login tests', () => {
     }));
   });
 
-  it('Login_ShouldReturnToken_WhenCredentialsAreValid', async () => {
+  it.only('Login_ShouldReturnToken_WhenCredentialsAreValid', async () => {
     const res: TokenDto =
       (await login(app, createdUser.email, createdUser.password)
         .expect(HttpStatus.Success)).body;

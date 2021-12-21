@@ -5,7 +5,7 @@ import {
 @Entity()
 export class RefreshToken {
   @ObjectIdColumn()
-  public id?: ObjectID;
+  public id: ObjectID;
 
   @Column({ unique: true })
   public token: string;
@@ -20,11 +20,11 @@ export class RefreshToken {
   public revoked: boolean;
 
   constructor(
+    id: ObjectID,
     token: string,
     expiresAt: number,
     userId: string,
     revoked: boolean,
-    id?: ObjectID,
   ) {
     this.token = token;
     this.expiresAt = expiresAt;

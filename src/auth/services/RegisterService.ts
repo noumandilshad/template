@@ -4,6 +4,7 @@ import { User } from '../../user/models/User';
 import { UserService } from '../../user/services/UserService';
 import { userTypes } from '../../user/userTypes';
 import { authTypes } from '../authTypes';
+import { RegisterDto } from '../dtos/RegisterDto';
 import { PasswordService } from './PasswordService';
 
 @injectable()
@@ -23,13 +24,13 @@ export class RegisterService {
     this.passwordService = passwordService;
   }
 
-  async registerUser(user: User): Promise<User> {
-    const registeredUser: User = { ...user };
-    this.logger.debug(`Registering a new user ${user}`);
+  async registerUser(registerDto: RegisterDto): Promise<User> {
+    this.logger.debug(`Registering a new user ${registerDto}`);
 
-    registeredUser.password = await this.passwordService.hashPassword(user.password);
-
-    return this.userService.saveUser(registeredUser);
+    return this.userService.createUser({
+      ...registerDto,
+      password: await this.passwordService.hashPassword(registerDto.password),
+    });
     // TODO: Add user email verification
   }
 }

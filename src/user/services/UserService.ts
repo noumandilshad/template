@@ -1,6 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { getLogger, Logger } from 'log4js';
 import { Repository } from 'typeorm';
+import { RegisterDto } from '../../auth/dtos/RegisterDto';
 import { ApiError } from '../../common/error/ApiError';
 import { ApiErrorMessage } from '../../common/error/ApiErrorMessage';
 import { User } from '../models/User';
@@ -19,22 +20,23 @@ export class UserService {
     this.userRepository = userRepository;
   }
 
-  async saveUser(user: User): Promise<User> {
-    this.logger.info(`Creating a new user with email ${user.email}`);
+  async createUser(registerDto: RegisterDto): Promise<User> {
+    this.logger.info(`Creating a new user with email ${registerDto.email}`);
 
-    if (await this.userRepository.findOne({ email: user.email })) {
+    if (await this.userRepository.findOne({ email: registerDto.email })) {
       throw ApiError.fromApiErrorMessage(ApiErrorMessage.emailAlreadyInUse);
     }
 
-    if (user.phone && await this.userRepository.findOne({ phone: user.phone })) {
+    if (registerDto.phone
+      && await this.userRepository.findOne({ phone: registerDto.phone })) {
       throw ApiError.fromApiErrorMessage(ApiErrorMessage.phoneAlreadyInUse);
     }
 
     try {
-      const createdUser = await this.userRepository.create(user);
+      const user = await this.userRepository.save(registerDto);
 
-      this.logger.info(`New user with id ${createdUser.id} was created`);
-      return createdUser;
+      this.logger.info(`New user with id ${user.id} was created`);
+      return user;
     } catch (error: any) {
       throw ApiError.fromInternalServerError(error.message);
     }

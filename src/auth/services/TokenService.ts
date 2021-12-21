@@ -86,17 +86,22 @@ export class TokenService {
 
     // Revoke token to avoid being used a second time
     refreshToken.revoked = true;
-    await this.refreshTokenRepository.update(refreshToken.id!, { revoked: true });
+    await this.refreshTokenRepository.update(refreshToken.id, { revoked: true });
     return this.issueTokenPairForUser(user);
   }
 
-  private issueTokenPairForUser(user: User): TokenPair {
+  private async issueTokenPairForUser(user: User): Promise<TokenPair> {
     const accessToken = this.generateAccessToken(user);
-    const refreshToken = this.generateRefreshToken(user);
+    const refreshToken = this.generateRefreshToken();
 
-    this.refreshTokenRepository.create(refreshToken);
+    const createdRefreshToken = await this.refreshTokenRepository.save({
+      token: refreshToken,
+      expiresAt: Date.now() + this.jwtRefreshTokenExpiration,
+      userId: user.id.toString(),
+      revoked: false,
+    });
 
-    return new TokenPair(accessToken, refreshToken);
+    return new TokenPair(accessToken, createdRefreshToken);
   }
 
   public generateAccessToken(user: User): string {
@@ -110,14 +115,8 @@ export class TokenService {
     );
   }
 
-  public generateRefreshToken(user: User): RefreshToken {
-    const token = randToken.uid(512);
-    return new RefreshToken(
-      token,
-      Date.now() + this.jwtRefreshTokenExpiration,
-      user.id!.toString(),
-      false,
-    );
+  public generateRefreshToken(): string {
+    return randToken.uid(512);
   }
 
   public isTokenValid(token: string): boolean {

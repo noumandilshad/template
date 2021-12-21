@@ -1,5 +1,4 @@
 export const commonTypes = {
-  MongoDbConnection: Symbol.for('MongoDbConnection'),
   MongoDbHost: Symbol.for('MongoDbHost'),
   MongoDbPort: Symbol.for('MongoDbPort'),
   MongoDbUsername: Symbol.for('MongoDbUsername'),

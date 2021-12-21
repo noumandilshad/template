@@ -5,7 +5,6 @@ import { Repository } from 'typeorm';
 import { getApp } from '../utils/getApp';
 import { LoginDto } from '../../src/auth/dtos/LoginDto';
 import { appContainer } from '../../inversify.config';
-import { MongoDbConnection } from '../../src/common/MongoDbConnection';
 import { commonTypes } from '../../src/common/commonTypes';
 import { User } from '../../src/user/models/User';
 import { RegisterService } from '../../src/auth/services/RegisterService';
@@ -15,6 +14,7 @@ import { RefreshTokenDto } from '../../src/auth/dtos/RefreshTokenDto';
 import { ApiErrorResponse } from '../../src/common/types/ApiErrorResponse';
 import { ApiErrorMessage } from '../../src/common/error/ApiErrorMessage';
 import { RefreshToken } from '../../src/auth/models/RefreshToken';
+import { RegisterDto } from '../../src/auth/dtos/RegisterDto';
 
 const login = (app: Application, email: string, password: string) => request(app)
   .post('/auth/login')
@@ -29,8 +29,8 @@ const refreshToken = (app: Application, email: string, token: string) => request
 
 describe('Refresh Token tests', () => {
   const password = '12345';
-  let createdUser = new User('john@mail.com', password);
 
+  let createdUser: User;
   let app: Application;
   let refreshTokenRepository: Repository<RefreshToken>;
 
@@ -38,12 +38,7 @@ describe('Refresh Token tests', () => {
     app = await getApp();
     refreshTokenRepository = appContainer.get<Repository<RefreshToken>>(authTypes.RefreshTokenRepository);
     const registerService = appContainer.get<RegisterService>(authTypes.RegisterService);
-    createdUser = await registerService.registerUser(createdUser);
-  });
-  afterAll(async () => {
-    await appContainer.get<MongoDbConnection>(commonTypes.MongoDbConnection).closeConnection();
-    // FIXME: test are not exiting. this is a temporary fix
-    setTimeout(() => process.exit(), 1000);
+    createdUser = await registerService.registerUser(new RegisterDto('john@mail.com', password));
   });
 
   it('RefreshToken_ShouldReturnUnauthorized_WhenTokenNotInDb', async () => {
@@ -109,13 +104,13 @@ describe('Refresh Token tests', () => {
     expect(res.refreshToken).toBeDefined();
   });
   it('RefreshToken_ShouldReturnUnauthorized_WhenTokenIsExpired', async () => {
-    const expiredRefreshToken = new RefreshToken(
-      'someToken',
-      Date.now(),
-      createdUser.id!.toString(),
-      false,
-    );
-    refreshTokenRepository.create(expiredRefreshToken);
+    const expiredRefreshToken = {
+      token: 'someToken',
+      expiresAt: Date.now(),
+      userId: createdUser.id.toString(),
+      revoked: false,
+    };
+    refreshTokenRepository.save(expiredRefreshToken);
 
     const res: ApiErrorMessage = (
       await refreshToken(app, createdUser.email, expiredRefreshToken.token).expect(401)

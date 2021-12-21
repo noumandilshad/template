@@ -3,9 +3,7 @@ import request from 'supertest';
 import { Application } from 'express';
 import { getApp } from '../utils/getApp';
 import { appContainer } from '../../inversify.config';
-import { MongoDbConnection } from '../../src/common/MongoDbConnection';
 import { commonTypes } from '../../src/common/commonTypes';
-import { User } from '../../src/user/models/User';
 import { RegisterService } from '../../src/auth/services/RegisterService';
 import { authTypes } from '../../src/auth/authTypes';
 import { RegisterDto } from '../../src/auth/dtos/RegisterDto';
@@ -19,14 +17,14 @@ const register = (app: Application, email: any, password: any, phone?: any) => r
   .send(new RegisterDto(email, password, phone));
 
 describe('Register tests', () => {
-  const alreadyRegisteredUser = new User('paul@mail.com', '12345', '+351911911911');
+  const registeredUser = new RegisterDto('paul@mail.com', '12345', '+351911911911');
   const validEmail = 'john@mail.com';
   const validPassword = 'somepwd';
   const validPhone = '+49911911911';
   let app: Application;
 
   it('Register_ShouldReturnError_WhenEmailAlreadyExists', async () => {
-    const res: ApiErrorResponse = (await register(app, alreadyRegisteredUser.email, validPassword)
+    const res: ApiErrorResponse = (await register(app, registeredUser.email, validPassword)
       .expect(ApiErrorMessage.emailAlreadyInUse.statusCode)
     ).body;
     expect(res.code).toBe(ApiErrorMessage.emailAlreadyInUse.code);
@@ -35,7 +33,7 @@ describe('Register tests', () => {
 
   it('Register_ShouldReturnError_WhenPhoneAlreadyExists', async () => {
     const res: ApiErrorResponse = (
-      await register(app, validEmail, validPassword, alreadyRegisteredUser.phone)
+      await register(app, validEmail, validPassword, registeredUser.phone)
         .expect(ApiErrorMessage.phoneAlreadyInUse.statusCode)
     ).body;
     expect(res.code).toBe(ApiErrorMessage.phoneAlreadyInUse.code);
@@ -85,11 +83,6 @@ describe('Register tests', () => {
   beforeAll(async () => {
     app = await getApp();
     const registerService = appContainer.get<RegisterService>(authTypes.RegisterService);
-    await registerService.registerUser(alreadyRegisteredUser);
-  });
-  afterAll(async () => {
-    await appContainer.get<MongoDbConnection>(commonTypes.MongoDbConnection).closeConnection();
-    // FIXME: test are not exiting. this is a temporary fix
-    setTimeout(() => process.exit(), 1000);
+    await registerService.registerUser(registeredUser);
   });
 });

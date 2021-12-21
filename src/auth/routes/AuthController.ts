@@ -45,14 +45,8 @@ export class AuthController {
     this.appLogger.info('Creating a new user from ', RegisterDto);
     const registerUserDto = req.body;
 
-    const user = await this.registerService.registerUser(
-      new User(
-        registerUserDto.email,
-        registerUserDto.password,
-        registerUserDto.phone,
-      ),
-    );
-
+    const user = await this.registerService.registerUser(registerUserDto);
+    console.log(user);
     res
       .status(HttpStatus.Created)
       .send(UserDto.fromUser(user));
