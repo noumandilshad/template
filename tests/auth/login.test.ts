@@ -1,6 +1,7 @@
 import 'ts-jest/utils';
 import request from 'supertest';
 import { Application } from 'express';
+import { Connection } from 'typeorm';
 import { getApp } from '../utils/getApp';
 import { LoginDto } from '../../src/auth/dtos/LoginDto';
 import { appContainer } from '../../inversify.config';
@@ -10,20 +11,17 @@ import { ApiErrorResponse } from '../../src/common/types/ApiErrorResponse';
 import { TokenDto } from '../../src/auth/dtos/TokenDto';
 import { HttpStatus } from '../../src/common/types/HttpStatus';
 import { RegisterDto } from '../../src/auth/dtos/RegisterDto';
+import { closeMemoryMongoServer, connectToDatabase } from '../../src/common/databaseConnection';
 
 const login = (app: Application, email: any, password: any) => request(app)
   .post('/auth/login')
   .send(new LoginDto(email, password));
 
 describe('Login tests', () => {
-  let app: Application;
   const createdUser = new RegisterDto('john@mail.com', '12345');
 
-  beforeAll(async () => {
-    app = await getApp();
-    const registerService = appContainer.get<RegisterService>(authTypes.RegisterService);
-    await registerService.registerUser(createdUser);
-  });
+  let app: Application;
+  let dbConnection: Connection;
 
   it('Login_ShouldReturnUnauthorized_WhenUserDoesntExist', async () => {
     await login(app, 'myemail@mail.com', 'awesomepasswd').expect(401);
@@ -45,11 +43,23 @@ describe('Login tests', () => {
     }));
   });
 
-  it.only('Login_ShouldReturnToken_WhenCredentialsAreValid', async () => {
+  it('Login_ShouldReturnToken_WhenCredentialsAreValid', async () => {
     const res: TokenDto =
       (await login(app, createdUser.email, createdUser.password)
         .expect(HttpStatus.Success)).body;
     expect(res.accessToken).toBeDefined();
     expect(res.refreshToken).toBeDefined();
+  });
+
+  beforeAll(async () => {
+    dbConnection = await connectToDatabase();
+    app = getApp();
+    const registerService = appContainer.get<RegisterService>(authTypes.RegisterService);
+    await registerService.registerUser(createdUser);
+  });
+
+  afterAll(async () => {
+    await dbConnection.close();
+    await closeMemoryMongoServer();
   });
 });

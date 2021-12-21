@@ -35,7 +35,7 @@ export class FriencyApi {
     this.tokenService = tokenService;
   }
 
-  async getConfiguredApp(): Promise<Application> {
+  getConfiguredApp(): Application {
     this.addPreRouterMiddlewares();
     this.addRouters();
 

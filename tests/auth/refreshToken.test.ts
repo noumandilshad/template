@@ -1,7 +1,7 @@
 import 'ts-jest/utils';
 import request from 'supertest';
 import { Application } from 'express';
-import { Repository } from 'typeorm';
+import { Connection, Repository } from 'typeorm';
 import { getApp } from '../utils/getApp';
 import { LoginDto } from '../../src/auth/dtos/LoginDto';
 import { appContainer } from '../../inversify.config';
@@ -14,6 +14,7 @@ import { ApiErrorResponse } from '../../src/common/types/ApiErrorResponse';
 import { ApiErrorMessage } from '../../src/common/error/ApiErrorMessage';
 import { RefreshToken } from '../../src/auth/models/RefreshToken';
 import { RegisterDto } from '../../src/auth/dtos/RegisterDto';
+import { closeMemoryMongoServer, connectToDatabase } from '../../src/common/databaseConnection';
 
 const login = (app: Application, email: string, password: string) => request(app)
   .post('/auth/login')
@@ -28,17 +29,10 @@ const refreshToken = (app: Application, email: string, token: string) => request
 
 describe('Refresh Token tests', () => {
   const password = '12345';
-
+  let connection: Connection;
   let createdUser: User;
   let app: Application;
   let refreshTokenRepository: Repository<RefreshToken>;
-
-  beforeAll(async () => {
-    app = await getApp();
-    refreshTokenRepository = appContainer.get<Repository<RefreshToken>>(authTypes.RefreshTokenRepository);
-    const registerService = appContainer.get<RegisterService>(authTypes.RegisterService);
-    createdUser = await registerService.registerUser(new RegisterDto('john@mail.com', password));
-  });
 
   it('RefreshToken_ShouldReturnUnauthorized_WhenTokenNotInDb', async () => {
     const tokenDto: TokenDto = (
@@ -117,5 +111,18 @@ describe('Refresh Token tests', () => {
 
     expect(res.code).toBe(ApiErrorMessage.unauthorized.code);
     expect(res.message).toBe(ApiErrorMessage.unauthorized.message);
+  });
+
+  beforeAll(async () => {
+    connection = await connectToDatabase();
+    app = getApp();
+    refreshTokenRepository = appContainer.get<Repository<RefreshToken>>(authTypes.RefreshTokenRepository);
+    const registerService = appContainer.get<RegisterService>(authTypes.RegisterService);
+    createdUser = await registerService.registerUser(new RegisterDto('john@mail.com', password));
+  });
+
+  afterAll(async () => {
+    await connection.close();
+    await closeMemoryMongoServer();
   });
 });

@@ -1,6 +1,7 @@
 import 'ts-jest/utils';
 import request from 'supertest';
 import { Application } from 'express';
+import { Connection } from 'typeorm';
 import { getApp } from '../utils/getApp';
 import { appContainer } from '../../inversify.config';
 import { RegisterService } from '../../src/auth/services/RegisterService';
@@ -10,6 +11,7 @@ import { ApiErrorMessage } from '../../src/common/error/ApiErrorMessage';
 import { ApiErrorResponse } from '../../src/common/types/ApiErrorResponse';
 import { UserDto } from '../../src/user/dtos/UserDto';
 import { HttpStatus } from '../../src/common/types/HttpStatus';
+import { closeMemoryMongoServer, connectToDatabase } from '../../src/common/databaseConnection';
 
 const register = (app: Application, email: any, password: any, phone?: any) => request(app)
   .post('/auth/register')
@@ -21,6 +23,7 @@ describe('Register tests', () => {
   const validPassword = 'somepwd';
   const validPhone = '+49911911911';
   let app: Application;
+  let dbConnection: Connection;
 
   it('Register_ShouldReturnError_WhenEmailAlreadyExists', async () => {
     const res: ApiErrorResponse = (await register(app, registeredUser.email, validPassword)
@@ -80,8 +83,14 @@ describe('Register tests', () => {
   });
 
   beforeAll(async () => {
-    app = await getApp();
+    dbConnection = await connectToDatabase();
+    app = getApp();
     const registerService = appContainer.get<RegisterService>(authTypes.RegisterService);
     await registerService.registerUser(registeredUser);
+  });
+
+  afterAll(async () => {
+    await dbConnection.close();
+    await closeMemoryMongoServer();
   });
 });

@@ -45,7 +45,7 @@ export class AuthController {
     const registerUserDto = req.body;
 
     const user = await this.registerService.registerUser(registerUserDto);
-    console.log(user);
+
     res
       .status(HttpStatus.Created)
       .send(UserDto.fromUser(user));

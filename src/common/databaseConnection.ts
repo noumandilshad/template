@@ -9,13 +9,14 @@ const commonProperties: ConnectionOptions = {
   database: getEnv('MONGO_DB_DATABASE'),
   entities: ['src/**/models/*.ts'],
 };
+let mongoServer: MongoMemoryServer;
 
 export const connectToDatabase = async (): Promise<Connection> => {
   if (isNodeEnvTest()) {
-    const mongoServer = await MongoMemoryServer.create();
+    mongoServer = await MongoMemoryServer.create();
     return createConnection({
       ...commonProperties,
-      url: mongoServer.getUri(),
+      url: await mongoServer.getUri(),
     });
   }
   return createConnection({
@@ -26,3 +27,5 @@ export const connectToDatabase = async (): Promise<Connection> => {
     password: getEnv('MONGO_DB_PASSWORD'),
   });
 };
+
+export const closeMemoryMongoServer = (): Promise<boolean> => mongoServer.stop();

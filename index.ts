@@ -1,5 +1,6 @@
 /* eslint-disable */
-import { initializeAppContainer } from './inversify.config';
+import { appContainer, initializeAppContainer } from './inversify.config';
+import { connectToDatabase } from './src/common/databaseConnection';
 import { getEnv } from './src/common/env';
 import { FriencyApi, types } from './src/FriencyApi';
 
@@ -9,21 +10,19 @@ const http = require('http');
 let server: any;
 
 const port = normalizePort(getEnv('PORT'));
-initializeAppContainer().then((appContainer) => {
-  appContainer.get<FriencyApi>(types.FriencyApi).getConfiguredApp()
-    .then((app) => {
+connectToDatabase().then((connection) => {
+  initializeAppContainer();
+  const app = appContainer.get<FriencyApi>(types.FriencyApi).getConfiguredApp()
 
-      app.set('port', port);
+  app.set('port', port);
 
-      console.log(`Listening to port ${port}`);
+  console.log(`Listening to port ${port}`);
 
-      server = http.createServer(app);
-      server.listen(port);
-      server.on('error', onError);
-      server.on('listening', onListening);
-    });
+  server = http.createServer(app);
+  server.listen(port);
+  server.on('error', onError);
+  server.on('listening', onListening);
 });
-
 /**
  * Normalize a port into a number, string, or false.
  */

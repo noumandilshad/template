@@ -4,13 +4,10 @@ import { Container } from 'inversify';
 import { authContainer } from './src/auth/authContainer';
 import { FriencyApi, types } from './src/FriencyApi';
 import { userContainer } from './src/user/userContainer';
-import { connectToDatabase } from './src/common/databaseConnection';
 
 const appContainer = new Container();
 
-export const initializeAppContainer = async (): Promise<Container> => {
-  await connectToDatabase();
-
+export const initializeAppContainer = (): Container => {
   appContainer.load(authContainer);
   appContainer.load(userContainer);
   appContainer.bind<FriencyApi>(types.FriencyApi).to(FriencyApi);
