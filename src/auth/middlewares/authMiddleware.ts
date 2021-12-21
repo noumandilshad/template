@@ -1,13 +1,13 @@
 /* eslint-disable implicit-arrow-linebreak */
 import { NextFunction, Request, Response } from 'express';
 import { TokenService } from '../services/TokenService';
-import { HttpStatus } from '../../common/types/HttpStatus';
 import { ApiError } from '../../common/error/ApiError';
 import { ApiErrorMessage } from '../../common/error/ApiErrorMessage';
 
 const NO_AUTH_PATHS = [
   '/auth/login',
   '/auth/register',
+  '/auth/refresh',
 ];
 
 export const checkJwtTokenMiddleware = (tokenService: TokenService) =>

@@ -5,8 +5,12 @@ import { commonTypes } from './commonTypes';
 import { env } from './env';
 
 const USERS_COLLECTION_NAME = 'users';
+const REFRESH_TOKENS_COLLECTION_NAME = 'refreshTokens';
 
-export const collections: { users?: Collection } = {};
+export const collections: {
+  users?: Collection,
+  refreshTokens?: Collection,
+ } = {};
 
 @injectable()
 export class MongoDbConnection {
@@ -30,6 +34,11 @@ export class MongoDbConnection {
 
     await collections.users!.createIndex({ email: 1 }, { unique: true });
     await collections.users!.createIndex({ phone: 1 }, { unique: true });
+
+    const refreshTokensCollection: Collection = db.collection(REFRESH_TOKENS_COLLECTION_NAME);
+
+    collections.refreshTokens = refreshTokensCollection;
+    await collections.refreshTokens!.createIndex({ token: 1 }, { unique: true });
 
     // eslint-disable-next-line max-len
     this.logger.info(`Successfully connected to database: ${db.databaseName} and collection: ${usersCollection.collectionName}`);

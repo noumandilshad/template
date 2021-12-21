@@ -6,100 +6,120 @@
 	},
 	"item": [
 		{
-			"name": "Protected test route",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmaXJzdE5hbWasdUiOiJKb2huIiwibGFzdE5hbWUiOiJEb2UiLCJlbWFpbCI6ImpvYW8zQG1haWwuY29tIiwiaWQiOm51bGwsImlhdCI6MTYzOTU5MDI0OX0.7ldT5yP7IoWHYNv_m3G9kfJP90Lc7G8d6KQtSl-RRFQ",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "http://localhost:3000/auth/protected",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"auth",
-						"protected"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Login",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"jessica@mail.com\",\n    \"password\": \"12345\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
 					},
-					{
-						"key": "Authorization",
-						"value": "Bearer",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"email\": \"joao3@mail.com\",\n    \"password\": \"12345\"\n}"
+					"response": []
 				},
-				"url": {
-					"raw": "http://localhost:3000/auth/login",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"auth",
-						"login"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Register",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"jessica@mail.com\",\n    \"phone\": \"+9119119111\",\n    \"password\": \"12345\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"register"
+							]
+						}
 					},
-					{
-						"key": "Accept",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"email\": \"joao3@mail.com\",\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\"\n}"
+					"response": []
 				},
-				"url": {
-					"raw": "http://localhost:3000/auth/register",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"auth",
-						"register"
-					]
+				{
+					"name": "Refresh token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOi123JIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Implc3NpY2FAbWFpbC5jb20iLCJpZCI6bnVsbCwicGhvbmUiOiIrOTExOTExOTExMSIsImlhdCI6MTYzOTkxNDk3MX0.ssDtyG5C9PJEH920xNr0KRDTUW0ep3MSFqK_R53gJos",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refreshToken\": \"09qYFTuwGomBSoRiwdIz1fGj0nZ8BDOZsYdokCXiqGI87nHZowrxU1d22V1WhQsGUXoWz0B6W7pvLGlJk2uOD0scWZWcdqOyrdfZzDu25ivGemAM5TtMrLAf1kQhtG26NkzjR51B6PEuSF2eF5zQEv30mCI3vgsLdwW2SBxbgrL9mOu4Ft3moYSXMwGHbEcVfuPtpwVbKgeCraibLR9t095hhMQH52ADSmBCQ6kr80zh16W5cEDnpOT0sQEVTWGuYkKrj2sMItTANQWwC7cGo1u2w6Q5kMw9PHYufk1vCnm5shbwKHbJUSOurHzIZqeMtrfWuRhW26fJZFGMPT3ExKcUqI6bZe1rk9vYVcpoasAVNEqogl6T3KFnyPZzTy54WMgr4vFlt1olBxp0olYBr9nuMF2gbqeSuOXPGOOhzODmtGgnd47loPwnkHMJy4qFtVBaBNygZjJwn9csXVJ3pyaSZ4GS4I6FIiKV7VbOSAZSligvs3gnFfQfwcwoodxN\",\n    \"email\": \"jessica@mail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/refresh",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"refresh"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		}
 	]
 }

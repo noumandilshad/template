@@ -6,6 +6,7 @@ import { dtoValidationMiddleware } from '../../common/middlewares/dtoValidation'
 import { LoginDto } from '../dtos/LoginDto';
 import { RegisterDto } from '../dtos/RegisterDto';
 import { authTypes } from '../authTypes';
+import { RefreshTokenDto } from '../dtos/RefreshTokenDto';
 
 @injectable()
 export class AuthRouter implements BaseRouter {
@@ -35,10 +36,10 @@ export class AuthRouter implements BaseRouter {
       dtoValidationMiddleware(RegisterDto),
       (req, res) => this.authController.handleRegister(req, res),
     );
-    // TODO remove this
-    this.router.get(
-      '/protected',
-      (req, res) => this.authController.protectedRoute(req, res),
+    this.router.post(
+      '/refresh',
+      dtoValidationMiddleware(RefreshTokenDto),
+      (req, res) => this.authController.handleRefreshToken(req, res),
     );
   }
 }

@@ -33,9 +33,9 @@ export class UserService {
     try {
       const result = await this.userRepository.create(user);
 
-      user.id = result.insertedId;
+      user._id = result.insertedId;
 
-      this.logger.info(`New user with id ${user.id} was created`);
+      this.logger.info(`New user with id ${user._id} was created`);
       return user;
     } catch (error: any) {
       throw ApiError.fromInternalServerError(error.message);

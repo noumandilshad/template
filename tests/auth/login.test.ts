@@ -13,6 +13,10 @@ import { ApiErrorResponse } from '../../src/common/types/ApiErrorResponse';
 import { TokenDto } from '../../src/auth/dtos/TokenDto';
 import { HttpStatus } from '../../src/common/types/HttpStatus';
 
+const login = (app: Application, email: any, password: any) => request(app)
+  .post('/auth/login')
+  .send(new LoginDto(email, password));
+
 describe('Login tests', () => {
   let app: Application;
   const createdUser = new User('john@mail.com', '12345');
@@ -29,45 +33,30 @@ describe('Login tests', () => {
   });
 
   it('Login_ShouldReturnUnauthorized_WhenUserDoesntExist', async () => {
-    await request(app)
-      .post('/auth/login')
-      .send(new LoginDto('myemail@mail.com', 'awesomepasswd'))
-      .set('content-type', 'application/json')
-      .expect(401);
+    await login(app, 'myemail@mail.com', 'awesomepasswd').expect(401);
   });
 
   it('Login_ShouldReturnBadRequest_WhenEmailIsInvalid', async () => {
     await Promise.all(['', 'mail.com', '  mail@', 'email@mail'].map(async (invalidEmail) => {
-      const res = await request(app)
-        .post('/auth/login')
-        .send(new LoginDto(invalidEmail, 'awesomepasswd'))
-        .set('content-type', 'application/json')
-        .expect(HttpStatus.BadRequest);
-      const body = res.body as ApiErrorResponse;
-      expect(body.errors?.email).toBeDefined();
+      const res: ApiErrorResponse =
+        (await login(app, invalidEmail, 'awesomepasswd').expect(HttpStatus.BadRequest)).body;
+      expect(res.errors?.email).toBeDefined();
     }));
   });
 
   it('Login_ShouldReturnBadRequest_WhenPasswordIsInvalid', async () => {
     await Promise.all(['', null, undefined].map(async (invalidPwd) => {
-      const res = await request(app)
-        .post('/auth/login')
-        .send({ email: 'valid@mail.com', password: invalidPwd })
-        .set('content-type', 'application/json')
-        .expect(HttpStatus.BadRequest);
-      const body = res.body as ApiErrorResponse;
-      expect(body.errors?.password).toBeDefined();
+      const res: ApiErrorResponse =
+        (await login(app, 'valid@mail.com', invalidPwd).expect(HttpStatus.BadRequest)).body;
+      expect(res.errors?.password).toBeDefined();
     }));
   });
 
   it('Login_ShouldReturnToken_WhenCredentialsAreValid', async () => {
-    const res = await request(app)
-      .post('/auth/login')
-      .send(new LoginDto(createdUser.email, createdUser.password))
-      .set('content-type', 'application/json')
-      .expect(HttpStatus.Success);
-    const body = res.body as TokenDto;
-    expect(body.accessToken).toBeDefined();
-    expect(body.refreshToken).toBeDefined();
+    const res: TokenDto =
+      (await login(app, createdUser.email, createdUser.password)
+        .expect(HttpStatus.Success)).body;
+    expect(res.accessToken).toBeDefined();
+    expect(res.refreshToken).toBeDefined();
   });
 });

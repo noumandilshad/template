@@ -10,6 +10,7 @@ import { TokenService } from '../services/TokenService';
 import { RegisterService } from '../services/RegisterService';
 import { UserDto } from '../../user/dtos/UserDto';
 import { authTypes } from '../authTypes';
+import { RefreshTokenDto } from '../dtos/RefreshTokenDto';
 
 @injectable()
 export class AuthController {
@@ -28,16 +29,19 @@ export class AuthController {
     this.tokenService = tokenService;
   }
 
-  async handleLogin(req: Request<any, any, LoginDto>, res: Response): Promise<void> {
+  public async handleLogin(req: Request<any, any, LoginDto>, res: Response): Promise<void> {
     const loginDto = req.body;
-    const token = await this.tokenService.issueAccessToken(loginDto.email, loginDto.password);
+    const tokenPair = await this.tokenService.issueTokenPairForCredentials(
+      loginDto.email,
+      loginDto.password,
+    );
 
     res
       .status(HttpStatus.Success)
-      .send(new TokenDto(token.accessToken, token.refreshToken));
+      .send(new TokenDto(tokenPair.accessToken, tokenPair.refreshToken.token));
   }
 
-  async handleRegister(req: Request<any, any, RegisterDto>, res: Response<UserDto>): Promise<void> {
+  public async handleRegister(req: Request<any, any, RegisterDto>, res: Response<UserDto>): Promise<void> {
     this.appLogger.info('Creating a new user from ', RegisterDto);
     const registerUserDto = req.body;
 
@@ -54,7 +58,14 @@ export class AuthController {
       .send(UserDto.fromUser(user));
   }
 
-  public protectedRoute(_: Request<any, UserDto, any>, res: Response<UserDto>): void {
-    res.status(HttpStatus.Created).send();
+  public async handleRefreshToken(req: Request<any, any, RefreshTokenDto>, res: Response): Promise<void> {
+    const refreshTokenDto = req.body;
+    const tokenPair = await this.tokenService.issueTokenPairForRefreshToken(
+      refreshTokenDto.refreshToken,
+      refreshTokenDto.email,
+    );
+    res
+      .status(HttpStatus.Success)
+      .send(new TokenDto(tokenPair.accessToken, tokenPair.refreshToken.token));
   }
 }
