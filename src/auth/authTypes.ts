@@ -1,4 +1,5 @@
 export const authTypes = {
+  VerificationRepository: Symbol.for('VerificationRepository'),
   AuthController: Symbol.for('AuthController'),
   RegisterService: Symbol.for('RegisterService'),
   TokenService: Symbol.for('TokenService'),
@@ -8,4 +9,5 @@ export const authTypes = {
   JwtAccessTokenExpiration: Symbol.for('JwtAccessTokenExpiration'),
   JwtSecret: Symbol.for('JwtSecret'),
   JwtRefreshTokenExpiration: Symbol.for('JwtRefreshTokenExpiration'),
+  VerificationCodeExpiration: Symbol.for('VerificationCodeExpiration'),
 };

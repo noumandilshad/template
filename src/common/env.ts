@@ -13,7 +13,8 @@ type EnvKey =
   'MONGO_DB_DATABASE' |
   'JWT_PRIVATE_KEY' |
   'JWT_ACCESS_TOKEN_EXPIRATION' |
-  'JWT_REFRESH_TOKEN_EXPIRATION';
+  'JWT_REFRESH_TOKEN_EXPIRATION' |
+  'VERIFICATION_CODE_EXPIRATION';
 
 export const getEnv = (key: EnvKey, defaultValue?: string): string => {
   const value = process.env[key] || defaultValue;

@@ -21,4 +21,5 @@ export const authContainer = new ContainerModule((bind: interfaces.Bind, unbind:
     .toConstantValue(parseInt(getEnv('JWT_ACCESS_TOKEN_EXPIRATION'), 10));
   bind<number>(authTypes.JwtRefreshTokenExpiration)
     .toConstantValue(parseInt(getEnv('JWT_REFRESH_TOKEN_EXPIRATION'), 10));
+  bind<string>(authTypes.VerificationCodeExpiration).toConstantValue(getEnv('VERIFICATION_CODE_EXPIRATION'));
 });
