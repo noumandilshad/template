@@ -7,6 +7,7 @@ import { LoginDto } from '../dtos/LoginDto';
 import { RegisterDto } from '../dtos/RegisterDto';
 import { authTypes } from '../authTypes';
 import { RefreshTokenDto } from '../dtos/RefreshTokenDto';
+import { UserVerificationDto } from '../dtos/UserVerificationDto';
 
 @injectable()
 export class AuthRouter implements BaseRouter {
@@ -40,6 +41,12 @@ export class AuthRouter implements BaseRouter {
       '/refresh',
       dtoValidationMiddleware(RefreshTokenDto),
       (req, res) => this.authController.handleRefreshToken(req, res),
+    );
+
+    this.router.post(
+      '/verify',
+      dtoValidationMiddleware(UserVerificationDto),
+      (req, res) => this.authController.handleUserVerification(req, res),
     );
   }
 }
