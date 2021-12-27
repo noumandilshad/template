@@ -10,6 +10,9 @@ import { RegisterService } from '../services/RegisterService';
 import { UserDto } from '../../user/dtos/UserDto';
 import { authTypes } from '../authTypes';
 import { RefreshTokenDto } from '../dtos/RefreshTokenDto';
+import { UserVerificationDto } from '../dtos/UserVerificationDto';
+import { UserService } from '../../user/services/UserService';
+import { userTypes } from '../../user/userTypes';
 
 @injectable()
 export class AuthController {
@@ -19,13 +22,17 @@ export class AuthController {
 
   private tokenService: TokenService;
 
+  private userService: UserService;
+
   constructor(
     @inject(authTypes.RegisterService) registerService: RegisterService,
+    @inject(userTypes.UserService) userService: UserService,
     @inject(authTypes.TokenService) tokenService: TokenService,
   ) {
     this.appLogger = getLogger();
     this.registerService = registerService;
     this.tokenService = tokenService;
+    this.userService = userService;
   }
 
   public async handleLogin(req: Request<any, any, LoginDto>, res: Response): Promise<void> {
@@ -60,5 +67,13 @@ export class AuthController {
     res
       .status(HttpStatus.Success)
       .send(new TokenDto(tokenPair.accessToken, tokenPair.refreshToken.token));
+  }
+
+  public async handleUserVerification(req: Request<any, any, UserVerificationDto>, res: Response): Promise<void> {
+    const userVerificationDto = req.body;
+    const verifedUser = await this.userService.verifyUser(userVerificationDto);
+    res
+      .status(HttpStatus.Success)
+      .send(UserDto.fromUser(verifedUser));
   }
 }
