@@ -16,6 +16,18 @@ export class ApiErrorMessage {
   public static readonly invalidFields =
     new ApiErrorMessage('10005', 'Invalid fields', HttpStatus.BadRequest);
 
+  public static readonly codeExpired =
+    new ApiErrorMessage('10006', 'Code expired', HttpStatus.BadRequest);
+
+  public static readonly codeUsed =
+    new ApiErrorMessage('10007', 'Code already used', HttpStatus.BadRequest);
+
+  public static readonly invalidUserOrCode =
+    new ApiErrorMessage('10008', 'Invalid user or code', HttpStatus.BadRequest);
+
+  public static readonly userNotExists =
+    new ApiErrorMessage('10008', 'User does not exists', HttpStatus.NotFound);
+
   private constructor(
     public readonly code: string,
     public readonly message: string,
