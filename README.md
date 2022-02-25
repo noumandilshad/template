@@ -43,3 +43,4 @@ You should now be able to run `curl -X POST http://localhost:3000/auth/login`.
 ## Test
 
 `npm run test`
+# template
